@@ -1,0 +1,31 @@
+.dd_fields_layout {
+	border: 1px solid black;
+	width: 100%;
+}
+
+.v-slot-dd_fields_layout {
+	width: 100px !important;
+}
+
+.dd_dialog_layout {
+	border: 1px solid black;
+	width: 100%;
+}
+
+.v-slot-dd_dialog_layout {
+	width: calc(100% - 400px) !important;
+}
+
+.dd_properties_layout {
+	border: 1px solid black;
+	width: 100%;
+}
+
+.v-slot-dd_properties_layout {
+	width: 300px !important;
+}
+
+.dd_main_layout{
+	width:100%;
+}
+

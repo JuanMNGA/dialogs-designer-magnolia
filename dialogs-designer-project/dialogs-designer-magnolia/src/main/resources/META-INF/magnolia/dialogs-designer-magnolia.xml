@@ -15,8 +15,8 @@
 	  <implementation>com.magnolia.rd.dialogs.designer.app.DialogsSubAppViewImpl</implementation>
 	</component>
 	<component>
-	  <type>com.magnolia.rd.dialogs.designer.layouts.LayoutCreator</type>
-	  <implementation>com.magnolia.rd.dialogs.designer.layouts.LayoutCreator</implementation>
+	  <type>com.magnolia.rd.dialogs.designer.utils.LayoutUtil</type>
+	  <implementation>com.magnolia.rd.dialogs.designer.utils.LayoutUtilImpl</implementation>
 	</component>
   </components>
 
