@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module SYSTEM "module.dtd" >
+<module>
+  <name>dialogs-designer-magnolia</name>
+  <displayName>${project.name}</displayName>
+  <description>${project.description}</description>
+  <class>com.magnolia.rd.dialogs.designer.DialogsDesignerModule</class>
+  <versionHandler>com.magnolia.rd.dialogs.designer.setup.DialogsDesignerModuleVersionHandler</versionHandler>
+  <version>${project.version}</version>
+
+  <components>
+	<id>main</id>
+	<component>
+	  <type>com.magnolia.rd.dialogs.designer.app.DialogsSubAppView</type>
+	  <implementation>com.magnolia.rd.dialogs.designer.app.DialogsSubAppViewImpl</implementation>
+	</component>
+	<component>
+	  <type>com.magnolia.rd.dialogs.designer.layouts.LayoutCreator</type>
+	  <implementation>com.magnolia.rd.dialogs.designer.layouts.LayoutCreator</implementation>
+	</component>
+  </components>
+
+  <dependencies>
+    <dependency>
+      <name>core</name>
+      <version>*</version>
+    </dependency>
+    <dependency>
+      <name>ui-admincentral</name>
+      <version>*</version>
+    </dependency>
+  </dependencies>
+</module>

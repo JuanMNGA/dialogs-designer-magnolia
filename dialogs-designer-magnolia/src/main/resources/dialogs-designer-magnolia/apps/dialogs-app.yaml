@@ -1,0 +1,10 @@
+appClass: info.magnolia.ui.framework.app.BaseApp
+class: info.magnolia.ui.api.app.AppDescriptor
+icon: icon-dt-dialog-definition
+theme: dialogs-theme
+name: dialogs-app
+subApps:
+  main:
+    subAppClass: com.magnolia.rd.dialogs.designer.app.DialogsSubApp
+    class: info.magnolia.ui.api.app.registry.ConfiguredSubAppDescriptor
+  

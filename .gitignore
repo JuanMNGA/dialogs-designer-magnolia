@@ -1,0 +1,25 @@
+# Eclipse IDE: Archivos de configuracion
+.classpath
+.project
+.settings/
+.metadata/
+.sonarlint
+ 
+# Maven: Archivos compilados
+target/
+ 
+# Netbeans: Archivos de configuracion
+nbactions.xml
+
+Servers/
+.recommenders/
+
+# Proyectos propios
+
+# Excluir todo lo contenido en la carpeta webapp menos la subcarpeta WEB-INF
+cache/
+logs/
+repositories/
+tmp/
+dialogs-designer-project-webapp/
+.idea/
