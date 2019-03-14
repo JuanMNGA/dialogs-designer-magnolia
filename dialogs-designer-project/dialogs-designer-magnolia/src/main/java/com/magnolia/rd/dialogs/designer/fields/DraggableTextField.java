@@ -10,7 +10,11 @@ public class DraggableTextField extends Label implements DraggableField {
 	
 	public static final String CLASS_IMAGE = "dd_text";
 	
+	private String fieldId;
+	
 	private TextFieldDefinition definition;
+	
+	private FieldType type = FieldType.TEXT;
 	
 	public DraggableTextField(String text) {
 		super(text);
@@ -36,6 +40,18 @@ public class DraggableTextField extends Label implements DraggableField {
 
 	public void setDefinition(TextFieldDefinition definition) {
 		this.definition = definition;
+	}
+
+	public String getFieldId() {
+		return fieldId;
+	}
+
+	public void setFieldId(String fieldId) {
+		this.fieldId = fieldId;
+	}
+	
+	public FieldType getType() {
+		return type;
 	}
 
 }

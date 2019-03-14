@@ -5,7 +5,7 @@ import com.vaadin.ui.VerticalLayout;
 public interface LayoutUtil {
 	
 	VerticalLayout createFieldsLayout();
-	VerticalLayout createDialogLayout();
+	VerticalLayout createDialogLayout(VerticalLayout propertiesLayout);
 	VerticalLayout createPropertiesLayout();
 	
 }

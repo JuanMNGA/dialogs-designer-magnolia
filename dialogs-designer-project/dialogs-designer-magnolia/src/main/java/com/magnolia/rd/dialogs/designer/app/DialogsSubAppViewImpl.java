@@ -41,8 +41,8 @@ public class DialogsSubAppViewImpl implements DialogsSubAppView {
     	
     	// Create the layouts
     	fieldsLayout = layoutUtil.createFieldsLayout();
-    	dialogLayout = layoutUtil.createDialogLayout();
     	propertiesLayout = layoutUtil.createPropertiesLayout();
+    	dialogLayout = layoutUtil.createDialogLayout(propertiesLayout);
     	
     	// Add the layouts to mainLayout
     	mainLayout.addComponent(fieldsLayout);

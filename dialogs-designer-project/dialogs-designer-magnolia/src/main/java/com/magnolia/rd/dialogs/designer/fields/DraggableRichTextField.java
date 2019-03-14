@@ -12,6 +12,8 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	
 	private RichTextFieldDefinition definition;
 	
+	private FieldType type = FieldType.RICHTEXT;
+	
 	public DraggableRichTextField(String text) {
 		super(text);
 		definition = new RichTextFieldDefinition();
@@ -36,6 +38,10 @@ public class DraggableRichTextField extends Label implements DraggableField {
 
 	public void setDefinition(RichTextFieldDefinition definition) {
 		this.definition = definition;
+	}
+	
+	public FieldType getType() {
+		return type;
 	}
 
 }

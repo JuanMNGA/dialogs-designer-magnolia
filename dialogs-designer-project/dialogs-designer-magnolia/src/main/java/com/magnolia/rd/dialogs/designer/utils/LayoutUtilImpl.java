@@ -1,11 +1,13 @@
 package com.magnolia.rd.dialogs.designer.utils;
 
+import java.lang.reflect.Field;
+import java.util.Calendar;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.magnolia.rd.dialogs.designer.constants.LayoutConstants;
 import com.magnolia.rd.dialogs.designer.fields.DraggableField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableRichTextField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableTextField;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -14,6 +16,7 @@ import com.vaadin.shared.ui.dnd.EffectAllowed;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
@@ -47,7 +50,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 	}
 
 	@Override
-	public VerticalLayout createDialogLayout() {
+	public VerticalLayout createDialogLayout(VerticalLayout propertiesLayout) {
 		
 		VerticalLayout vl = new VerticalLayout();
 		vl.addStyleName("dd_dialog_layout");
@@ -65,12 +68,45 @@ public class LayoutUtilImpl implements LayoutUtil {
 			Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
 			if (dragSource.isPresent() && dragSource.get() instanceof DraggableField) {
 				HorizontalLayout hl = new HorizontalLayout();
-				hl.addComponent(new Label(((DraggableField) dragSource.get()).getLabelText()));
+				DraggableField droppedField = null;
+				switch(((DraggableField) dragSource.get()).getType()) {
+				case TEXT:
+					droppedField = new DraggableTextField(((DraggableField) dragSource.get()).getLabelText());
+					hl.addComponent(((DraggableTextField)droppedField));
+					break;
+				case RICHTEXT:
+					droppedField = new DraggableRichTextField(((DraggableField) dragSource.get()).getLabelText());
+					hl.addComponent(((DraggableRichTextField)droppedField));
+					break;
+					default:
+						break;
+				}
 				hl.addComponent(addRemoveButton(vl, hl)); // Remove
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 
 				vl.addComponent(hl);
+				try {
+					VerticalLayout propertyLabel = new VerticalLayout();
+					VerticalLayout propertyValue = new VerticalLayout();
+					VerticalLayout propertyTable = new VerticalLayout();
+					HorizontalLayout propertyRow = new HorizontalLayout();
+					Field[] fields = droppedField.getDefinition().getClass().getDeclaredFields();
+					for(int i = 0; i < fields.length; ++i) {
+						String propertyLabelString = fields[i].getName();
+						Label tmpLabel = new Label(propertyLabelString);
+						tmpLabel.setStyleName("dd_centered_label");
+						propertyLabel.addComponent(tmpLabel);
+						propertyValue.addComponent(new TextField());
+						propertyRow.addComponent(propertyLabel);
+						propertyRow.addComponent(propertyValue);
+						propertyTable.addComponent(propertyRow);
+					}
+					propertyTable.setId(droppedField.getDefinition().getClass().getName() + "_" + Calendar.getInstance().getTimeInMillis());
+					propertiesLayout.addComponent(propertyTable);
+				} catch (Exception e) {
+					
+				}
 			}
 		});
 
