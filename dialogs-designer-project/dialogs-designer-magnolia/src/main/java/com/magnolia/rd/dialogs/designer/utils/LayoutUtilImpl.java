@@ -30,7 +30,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	@Override
 	public VerticalLayout createFieldsLayout() {
-		
+
 		VerticalLayout vl = new VerticalLayout();
 		vl.addStyleName("dd_fields_layout");
 
@@ -41,7 +41,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		vl.addComponent(draggableText);
 
 		// Rich Text Field
-		DraggableTextField draggableRich = new DraggableTextField("Rich Text Field");
+		DraggableRichTextField draggableRich = new DraggableRichTextField("Rich Text Field");
 		DragSourceExtension<Label> dragRichSource = new DragSourceExtension<>(draggableRich);
 		dragRichSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(draggableRich);
@@ -51,13 +51,13 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	@Override
 	public VerticalLayout createDialogLayout(VerticalLayout propertiesLayout) {
-		
+
 		VerticalLayout vl = new VerticalLayout();
 		vl.addStyleName("dd_dialog_layout");
 
 		// make the layout accept drops
 		DropTargetExtension<VerticalLayout> dropTarget = new DropTargetExtension<>(vl);
-		
+
 		// the drop effect must match the allowed effect in the drag source for a
 		// successful drop
 		dropTarget.setDropEffect(DropEffect.MOVE);
@@ -68,31 +68,32 @@ public class LayoutUtilImpl implements LayoutUtil {
 			Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
 			if (dragSource.isPresent() && dragSource.get() instanceof DraggableField) {
 				HorizontalLayout hl = new HorizontalLayout();
-				DraggableField droppedField = null;
-				switch(((DraggableField) dragSource.get()).getType()) {
-				case TEXT:
-					droppedField = new DraggableTextField(((DraggableField) dragSource.get()).getLabelText());
-					hl.addComponent(((DraggableTextField)droppedField));
-					break;
-				case RICHTEXT:
-					droppedField = new DraggableRichTextField(((DraggableField) dragSource.get()).getLabelText());
-					hl.addComponent(((DraggableRichTextField)droppedField));
-					break;
+				
+				DraggableField droppedField = ((DraggableField) dragSource.get());
+				switch (droppedField.getType()) {
+					case TEXT:
+						hl.addComponent(new DraggableTextField(droppedField.getLabelText()));
+						break;
+					case RICHTEXT:
+						hl.addComponent(new DraggableRichTextField(droppedField.getLabelText()));
+						break;
 					default:
 						break;
 				}
+				
+				// Action buttons
 				hl.addComponent(addRemoveButton(vl, hl)); // Remove
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
-
 				vl.addComponent(hl);
+				
 				try {
 					VerticalLayout propertyLabel = new VerticalLayout();
 					VerticalLayout propertyValue = new VerticalLayout();
 					VerticalLayout propertyTable = new VerticalLayout();
 					HorizontalLayout propertyRow = new HorizontalLayout();
 					Field[] fields = droppedField.getDefinition().getClass().getDeclaredFields();
-					for(int i = 0; i < fields.length; ++i) {
+					for (int i = 0; i < fields.length; ++i) {
 						String propertyLabelString = fields[i].getName();
 						Label tmpLabel = new Label(propertyLabelString);
 						tmpLabel.setStyleName("dd_centered_label");
@@ -102,17 +103,18 @@ public class LayoutUtilImpl implements LayoutUtil {
 						propertyRow.addComponent(propertyValue);
 						propertyTable.addComponent(propertyRow);
 					}
-					propertyTable.setId(droppedField.getDefinition().getClass().getName() + "_" + Calendar.getInstance().getTimeInMillis());
+					propertyTable.setId(droppedField.getDefinition().getClass().getName() + "_"
+							+ Calendar.getInstance().getTimeInMillis());
 					propertiesLayout.addComponent(propertyTable);
 				} catch (Exception e) {
-					
+
 				}
 			}
 		});
 
 		return vl;
 	}
-	
+
 	@Override
 	public VerticalLayout createPropertiesLayout() {
 		VerticalLayout vl = new VerticalLayout();
@@ -126,7 +128,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		Label label = new Label("X");
 		removeLayout.addComponent(label);
 		removeLayout.addLayoutClickListener(new LayoutClickListener() {
-			
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -134,46 +136,46 @@ public class LayoutUtilImpl implements LayoutUtil {
 				containerLayout.removeComponent(component);
 			}
 		});
-		
+
 		return removeLayout;
 	}
-	
+
 	private HorizontalLayout addMoveAboveButton(VerticalLayout containerLayout, HorizontalLayout component) {
 		HorizontalLayout moveLayout = new HorizontalLayout();
 		Label label = new Label("<");
 		moveLayout.addComponent(label);
 		moveLayout.addLayoutClickListener(new LayoutClickListener() {
-			
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
 				int index = containerLayout.getComponentIndex(component);
-				if(index > 0)
-					containerLayout.addComponent(component, index-1);
+				if (index > 0)
+					containerLayout.addComponent(component, index - 1);
 			}
 		});
-		
+
 		return moveLayout;
 	}
-	
+
 	private HorizontalLayout addMoveBelowButton(VerticalLayout containerLayout, HorizontalLayout component) {
 		HorizontalLayout moveLayout = new HorizontalLayout();
 		Label label = new Label(">");
 		moveLayout.addComponent(label);
 		moveLayout.addLayoutClickListener(new LayoutClickListener() {
-			
+
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
 				int index = containerLayout.getComponentIndex(component);
-				if(index < containerLayout.getComponentCount()-1)
-					containerLayout.addComponent(component, index+2);
+				if (index < containerLayout.getComponentCount() - 1)
+					containerLayout.addComponent(component, index + 2);
 			}
 		});
-		
+
 		return moveLayout;
 	}
-	
+
 }
