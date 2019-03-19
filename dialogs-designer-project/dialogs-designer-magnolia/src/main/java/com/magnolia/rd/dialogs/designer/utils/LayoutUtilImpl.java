@@ -2,6 +2,7 @@ package com.magnolia.rd.dialogs.designer.utils;
 
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -14,6 +15,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.shared.ui.dnd.DropEffect;
 import com.vaadin.shared.ui.dnd.EffectAllowed;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -22,6 +24,7 @@ import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
 
 import info.magnolia.i18nsystem.SimpleTranslator;
+import info.magnolia.ui.field.ConfiguredFieldDefinition;
 
 public class LayoutUtilImpl implements LayoutUtil {
 
@@ -70,49 +73,51 @@ public class LayoutUtilImpl implements LayoutUtil {
 				HorizontalLayout hl = new HorizontalLayout();
 				
 				DraggableField droppedField = ((DraggableField) dragSource.get());
-				switch (droppedField.getType()) {
-					case TEXT:
-						hl.addComponent(new DraggableTextField(droppedField.getLabelText()));
-						break;
-					case RICHTEXT:
-						hl.addComponent(new DraggableRichTextField(droppedField.getLabelText()));
-						break;
-					default:
-						break;
-				}
-				
+				String tableId = getTableId(droppedField.getDefinition().getClass());
+				hl.addComponent(addFieldLayout(propertiesLayout, droppedField, tableId));
 				// Action buttons
-				hl.addComponent(addRemoveButton(vl, hl)); // Remove
+				hl.addComponent(addRemoveButton(vl, hl, propertiesLayout, tableId)); // Remove
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 				vl.addComponent(hl);
-				
-				try {
-					VerticalLayout propertyLabel = new VerticalLayout();
-					VerticalLayout propertyValue = new VerticalLayout();
-					VerticalLayout propertyTable = new VerticalLayout();
-					HorizontalLayout propertyRow = new HorizontalLayout();
-					Field[] fields = droppedField.getDefinition().getClass().getDeclaredFields();
-					for (int i = 0; i < fields.length; ++i) {
-						String propertyLabelString = fields[i].getName();
-						Label tmpLabel = new Label(propertyLabelString);
-						tmpLabel.setStyleName("dd_centered_label");
-						propertyLabel.addComponent(tmpLabel);
-						propertyValue.addComponent(new TextField());
-						propertyRow.addComponent(propertyLabel);
-						propertyRow.addComponent(propertyValue);
-						propertyTable.addComponent(propertyRow);
-					}
-					propertyTable.setId(droppedField.getDefinition().getClass().getName() + "_"
-							+ Calendar.getInstance().getTimeInMillis());
-					propertiesLayout.addComponent(propertyTable);
-				} catch (Exception e) {
-
-				}
+				createNewPropertiesTable(propertiesLayout,tableId, droppedField.getDefinition().getClass());
 			}
 		});
 
 		return vl;
+	}
+	
+	private HorizontalLayout addFieldLayout(VerticalLayout propertiesLayout, DraggableField field, String tableId) {
+		HorizontalLayout fieldLayout = new HorizontalLayout();
+		DraggableField tmpField = null;
+		switch (field.getType()) {
+			case RICHTEXT:
+				tmpField = new DraggableRichTextField(field.getLabelText());
+				tmpField.setTableId(tableId);
+				fieldLayout.addComponent((DraggableRichTextField)tmpField);
+				break;
+			default:
+				tmpField = new DraggableTextField(field.getLabelText());
+				tmpField.setTableId(tableId);
+				fieldLayout.addComponent((DraggableTextField)tmpField);
+				break;
+		}
+		fieldLayout.addLayoutClickListener(new LayoutClickListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+				hideAllPropertiesLayout(propertiesLayout);
+				Iterator<Component> iterator = propertiesLayout.iterator();
+				while(iterator.hasNext()) {
+					Component tmp = iterator.next();
+					if(tmp.getId().equalsIgnoreCase(tableId)){
+						tmp.setVisible(true);
+					}
+				}
+			}
+		});
+		return fieldLayout;
 	}
 
 	@Override
@@ -123,7 +128,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		return vl;
 	}
 
-	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component) {
+	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component, VerticalLayout propertiesLayout, String tableId) {
 		HorizontalLayout removeLayout = new HorizontalLayout();
 		Label label = new Label("X");
 		removeLayout.addComponent(label);
@@ -133,6 +138,13 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
+				Iterator<Component> iterator = propertiesLayout.iterator();
+				while(iterator.hasNext()) {
+					Component tmp = iterator.next();
+					if(tmp.getId().equalsIgnoreCase(tableId)){
+						propertiesLayout.removeComponent(tmp);
+					}
+				}
 				containerLayout.removeComponent(component);
 			}
 		});
@@ -176,6 +188,41 @@ public class LayoutUtilImpl implements LayoutUtil {
 		});
 
 		return moveLayout;
+	}
+	
+	private void hideAllPropertiesLayout(VerticalLayout propertiesLayout) {
+		Iterator<Component> iterator = propertiesLayout.iterator();
+		while(iterator.hasNext()) {
+			iterator.next().setVisible(false);
+		}
+		
+	}
+	
+	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId, Class<? extends ConfiguredFieldDefinition> classDefinition) {
+		hideAllPropertiesLayout(propertiesLayout);
+		try {
+			VerticalLayout propertyLabel = new VerticalLayout();
+			VerticalLayout propertyValue = new VerticalLayout();
+			VerticalLayout propertyTable = new VerticalLayout();
+			HorizontalLayout propertyRow = new HorizontalLayout();
+			Field[] fields = classDefinition.getDeclaredFields();
+			for (int i = 0; i < fields.length; ++i) {
+				String propertyLabelString = fields[i].getName();
+				Label tmpLabel = new Label(propertyLabelString);
+				tmpLabel.setStyleName("dd_centered_label");
+				propertyLabel.addComponent(tmpLabel);
+				propertyValue.addComponent(new TextField());
+				propertyRow.addComponent(propertyLabel);
+				propertyRow.addComponent(propertyValue);
+				propertyTable.addComponent(propertyRow);
+			}
+			propertyTable.setId(tableId);
+			propertiesLayout.addComponent(propertyTable);
+		} catch (Exception e) {}
+	}
+	
+	private String getTableId(Class<? extends ConfiguredFieldDefinition> definition) {
+		return definition.getSimpleName() + "_" + Calendar.getInstance().getTimeInMillis();
 	}
 
 }

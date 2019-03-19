@@ -12,4 +12,8 @@ public interface DraggableField {
 	
 	public FieldType getType();
 	
+	public String getTableId();
+	
+	public void setTableId(String tableId);
+	
 }

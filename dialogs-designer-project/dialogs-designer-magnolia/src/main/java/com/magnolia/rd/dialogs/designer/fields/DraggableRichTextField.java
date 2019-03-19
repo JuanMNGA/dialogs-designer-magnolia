@@ -14,6 +14,8 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	
 	private FieldType type = FieldType.RICHTEXT;
 	
+	private String tableId;
+	
 	public DraggableRichTextField(String text) {
 		super(text);
 		definition = new RichTextFieldDefinition();
@@ -42,6 +44,16 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	
 	public FieldType getType() {
 		return type;
+	}
+
+	@Override
+	public String getTableId() {
+		return tableId;
+	}
+
+	@Override
+	public void setTableId(String tableId) {
+		this.tableId = tableId;
 	}
 
 }
