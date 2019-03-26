@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import com.magnolia.rd.dialogs.designer.fields.DraggableField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableRichTextField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableTextField;
@@ -15,6 +17,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.shared.ui.dnd.DropEffect;
 import com.vaadin.shared.ui.dnd.EffectAllowed;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -80,7 +83,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 				vl.addComponent(hl);
-				createNewPropertiesTable(propertiesLayout,tableId, droppedField.getDefinition().getClass());
+				createNewPropertiesTable(propertiesLayout,tableId, droppedField);
 			}
 		});
 
@@ -198,21 +201,17 @@ public class LayoutUtilImpl implements LayoutUtil {
 		
 	}
 	
-	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId, Class<? extends ConfiguredFieldDefinition> classDefinition) {
+	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId, DraggableField draggableField) {
 		hideAllPropertiesLayout(propertiesLayout);
 		try {
-			VerticalLayout propertyLabel = new VerticalLayout();
 			VerticalLayout propertyValue = new VerticalLayout();
 			VerticalLayout propertyTable = new VerticalLayout();
 			HorizontalLayout propertyRow = new HorizontalLayout();
-			Field[] fields = classDefinition.getDeclaredFields();
+			Class<? extends ConfiguredFieldDefinition> classDefinition = draggableField.getDefinition().getClass();
+			Field[] commonFields = ConfiguredFieldDefinition.class.getDeclaredFields();
+			Field[] fields = (Field[])ArrayUtils.addAll(commonFields, classDefinition.getDeclaredFields());
 			for (int i = 0; i < fields.length; ++i) {
-				String propertyLabelString = fields[i].getName();
-				Label tmpLabel = new Label(propertyLabelString);
-				tmpLabel.setStyleName("dd_centered_label");
-				propertyLabel.addComponent(tmpLabel);
-				propertyValue.addComponent(new TextField());
-				propertyRow.addComponent(propertyLabel);
+				propertyValue.addComponent(getComponentByFieldType(fields[i], draggableField));
 				propertyRow.addComponent(propertyValue);
 				propertyTable.addComponent(propertyRow);
 			}
@@ -223,6 +222,21 @@ public class LayoutUtilImpl implements LayoutUtil {
 	
 	private String getTableId(Class<? extends ConfiguredFieldDefinition> definition) {
 		return definition.getSimpleName() + "_" + Calendar.getInstance().getTimeInMillis();
+	}
+	
+	private Component getComponentByFieldType(Field currentField, DraggableField draggableField) {
+		Class fieldType = currentField.getType();
+		switch(fieldType.getSimpleName()) {
+		case "Boolean":
+		case "boolean":
+			try {
+				return new CheckBox(currentField.getName(), currentField.getBoolean(draggableField));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				return new CheckBox(currentField.getName());
+			}
+		default:
+			return new TextField(currentField.getName());
+		}
 	}
 
 }
