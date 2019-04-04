@@ -1,0 +1,134 @@
+/** *********************************** GENERAL **/
+
+/** *********************************** MAIN LAYOUT **/
+.dd_main_layout{
+	width: 100%;
+	height: 100%;
+	color: #232323;
+	background-color: #FFFFFF;
+    background-image: url("../img/background1.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/** *********************************** FIELDS LAYOUT **/
+.v-slot-dd_fields_layout, .v-slot-dd_fields_layout:before {
+    width:200px;
+}
+.v-slot-dd_fields_layout {
+    float:left;
+    font-size: 90%;
+}
+
+.v-slot-dd_fields_layout:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    left: 0;
+}
+
+.v-slot-dd_fields_layout .v-verticallayout-dd_fields_layout{
+	padding: 0;
+}
+
+/** FIELDS **/
+.v-slot-dd_fields_layout .v-slot{
+	margin-left: 0;
+    margin-bottom: 1px;
+    border: none;
+    border-radius: 3px;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
+    min-width: 150px;
+    max-width: 189px;
+    text-align: left;
+    background-color: #F5F5F5;
+    border: 1px solid #DBDBDB;
+}
+
+.v-slot-dd_fields_layout .v-slot:hover{
+    background-color: #EBEBEB;
+}
+
+.v-slot-dd_fields_layout .v-slot .icon{
+	width: 20px;
+    padding-bottom: 3px;
+    display: inline-block;
+}
+
+.v-slot-dd_fields_layout .v-slot .v-label{
+	margin-left: 9px;
+	font-size: 15px;
+	display: inline;
+}
+
+.v-slot-dd_fields_layout .v-spacing{
+	display: none;	
+}
+
+/** *********************************** DIALOG LAYOUT **/
+.v-slot-dd_dialog_layout, .v-slot-dd_dialog_layout:before {
+    width:calc(100% - 570px);
+}
+.v-slot-dd_dialog_layout {
+    float:left;
+    padding: 20px 0px;
+    background-color: rgba(0,0,0,0);
+}
+.dd_dialog_layout{
+	display: block;
+	width: 100%;
+	height:100%;
+}
+.v-slot-dd_dialog_layout:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    left: 200px;
+    background-color: rgba(0,0,0,0);
+}
+
+/** *********************************** PROPERTIES LAYOUT **/
+.v-slot-dd_properties_layout, .v-slot-dd_properties_layout:before {
+    width:300px;
+}
+.v-slot-dd_properties_layout {
+    float:left;
+    padding: 20px 30px;
+    font-size: 90%;
+    background-color: #232323;
+}
+.v-slot-dd_properties_layout:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    left: calc(100% - 500px);
+    background-color: #232323;
+}
+
+/** PRUEBA JUANMI **/
+.v-slot-prueba {
+	background-color: green !important;
+}
+
+.prueba {
+	background-color: green !important;
+}
+
+.dd_properties_layout {
+	border: 1px solid black;
+	width: 100%;
+}
+
+.v-slot-dd_properties_layout {
+	width: 300px !important;
+}
+
+

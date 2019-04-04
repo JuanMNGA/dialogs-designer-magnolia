@@ -30,4 +30,15 @@
       <version>*</version>
     </dependency>
   </dependencies>
+  
+  <repositories>
+		<repository>
+			<name>magnolia</name>
+			<workspaces>
+				<workspace>dialogs-designer</workspace>
+			</workspaces>
+			<nodeTypeFile>/mgnl-nodetypes/dialogs-nodetypes.xml</nodeTypeFile>
+		</repository>
+	</repositories>
+  
 </module>

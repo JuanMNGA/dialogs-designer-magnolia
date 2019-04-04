@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodeTypes xmlns:mgnl="http://www.magnolia.info/jcr/mgnl">
+<nodeType name="mgnl:dialog" isMixin="false" hasOrderableChildNodes="true" primaryItemName="">
+    <supertypes>
+      <supertype>mgnl:contentNode</supertype>
+    </supertypes>
+  </nodeType>
+</nodeTypes>

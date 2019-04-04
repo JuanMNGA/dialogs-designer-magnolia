@@ -33,6 +33,8 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	@Inject
 	private SimpleTranslator i18n;
+	
+	private HorizontalLayout selected;
 
 	@Override
 	public VerticalLayout createFieldsLayout() {
@@ -112,6 +114,11 @@ public class LayoutUtilImpl implements LayoutUtil {
 			public void layoutClick(LayoutClickEvent event) {
 				hideAllPropertiesLayout(propertiesLayout);
 				Iterator<Component> iterator = propertiesLayout.iterator();
+				if(selected != null) {
+					selected.removeStyleName("prueba");
+				}
+				selected = (HorizontalLayout) event.getClickedComponent().getParent().getParent();
+				selected.setStyleName("prueba");
 				while(iterator.hasNext()) {
 					Component tmp = iterator.next();
 					if(tmp.getId().equalsIgnoreCase(tableId)){
