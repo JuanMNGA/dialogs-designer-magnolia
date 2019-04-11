@@ -19,7 +19,8 @@ public class DraggableTextField extends Label implements DraggableField {
 	private String tableId;
 	
 	public DraggableTextField(String text) {
-		super(text);
+		super.setCaption(text);
+		super.setCaptionAsHtml(true);
 		this.definition = new TextFieldDefinition();
 	}
 	
@@ -33,7 +34,7 @@ public class DraggableTextField extends Label implements DraggableField {
 	
 	@Override
 	public String getLabelText() {
-		return getValue();
+		return getCaption();
 	}
 
 	public TextFieldDefinition getDefinition() {

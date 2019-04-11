@@ -43,16 +43,18 @@ public class LayoutUtilImpl implements LayoutUtil {
 		vl.addStyleName("dd_fields_layout");
 
 		// Text Field
-		DraggableTextField draggableText = new DraggableTextField("Text Field");
-		DragSourceExtension<Label> dragTextSource = new DragSourceExtension<>(draggableText);
+		DraggableTextField draggableText = new DraggableTextField("<span>Text Field</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout textLayout = new HorizontalLayout(draggableText);
+		DragSourceExtension<HorizontalLayout> dragTextSource = new DragSourceExtension<>(textLayout);
 		dragTextSource.setEffectAllowed(EffectAllowed.MOVE);
-		vl.addComponent(draggableText);
+		vl.addComponent(textLayout);
 
 		// Rich Text Field
-		DraggableRichTextField draggableRich = new DraggableRichTextField("Rich Text Field");
-		DragSourceExtension<Label> dragRichSource = new DragSourceExtension<>(draggableRich);
+		DraggableRichTextField draggableRich = new DraggableRichTextField("<span>Rich Text Field</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout richTextLayout = new HorizontalLayout(draggableRich);
+		DragSourceExtension<HorizontalLayout> dragRichSource = new DragSourceExtension<>(richTextLayout);
 		dragRichSource.setEffectAllowed(EffectAllowed.MOVE);
-		vl.addComponent(draggableRich);
+		vl.addComponent(richTextLayout);
 
 		return vl;
 	}
@@ -74,10 +76,12 @@ public class LayoutUtilImpl implements LayoutUtil {
 		dropTarget.addDropListener(event -> {
 			// if the drag source is in the same UI as the target
 			Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
-			if (dragSource.isPresent() && dragSource.get() instanceof DraggableField) {
+			if (dragSource.isPresent() && dragSource.get() instanceof HorizontalLayout) {
 				HorizontalLayout hl = new HorizontalLayout();
 				
-				DraggableField droppedField = ((DraggableField) dragSource.get());
+				HorizontalLayout droppedLayout = ((HorizontalLayout) dragSource.get());
+				DraggableField droppedField = (DraggableField) droppedLayout.getComponent(0);
+				
 				String tableId = getTableId(droppedField.getDefinition().getClass());
 				hl.addComponent(addFieldLayout(propertiesLayout, droppedField, tableId));
 				// Action buttons
@@ -85,7 +89,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 				vl.addComponent(hl);
-				createNewPropertiesTable(propertiesLayout,tableId, droppedField);
+				createNewPropertiesTable(propertiesLayout, tableId, droppedField);
 			}
 		});
 
@@ -117,7 +121,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 				if(selected != null) {
 					selected.removeStyleName("prueba");
 				}
-				selected = (HorizontalLayout) event.getClickedComponent().getParent().getParent();
+				selected = (HorizontalLayout)((HorizontalLayout) event.getSource()).getParent();
 				selected.setStyleName("prueba");
 				while(iterator.hasNext()) {
 					Component tmp = iterator.next();
@@ -153,6 +157,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 					Component tmp = iterator.next();
 					if(tmp.getId().equalsIgnoreCase(tableId)){
 						propertiesLayout.removeComponent(tmp);
+						break;
 					}
 				}
 				containerLayout.removeComponent(component);

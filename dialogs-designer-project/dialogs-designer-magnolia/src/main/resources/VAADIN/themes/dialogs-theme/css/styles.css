@@ -6,7 +6,7 @@
 	height: 100%;
 	color: #232323;
 	background-color: #FFFFFF;
-    background-image: url("../img/background1.png");
+    /*background-image: url("../img/background1.png");*/
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -102,6 +102,7 @@
     padding: 20px 30px;
     font-size: 90%;
     background-color: #232323;
+    color: white;
 }
 .v-slot-dd_properties_layout:before {
     content: '';
@@ -111,6 +112,7 @@
     z-index: -1;
     left: calc(100% - 500px);
     background-color: #232323;
+    color: white;
 }
 
 /** PRUEBA JUANMI **/
