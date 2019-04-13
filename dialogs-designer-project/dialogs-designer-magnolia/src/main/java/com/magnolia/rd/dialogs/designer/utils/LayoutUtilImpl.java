@@ -33,7 +33,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	@Inject
 	private SimpleTranslator i18n;
-	
+
 	private HorizontalLayout selected;
 
 	@Override
@@ -43,14 +43,16 @@ public class LayoutUtilImpl implements LayoutUtil {
 		vl.addStyleName("dd_fields_layout");
 
 		// Text Field
-		DraggableTextField draggableText = new DraggableTextField("<span>Text Field</span> <i class='fas fa-keyboard'></i>");
+		DraggableTextField draggableText = new DraggableTextField(
+				"<span>" + i18n.translate("dialogs-app.field.text", "") + "</span> <i class='fas fa-keyboard'></i>");
 		HorizontalLayout textLayout = new HorizontalLayout(draggableText);
 		DragSourceExtension<HorizontalLayout> dragTextSource = new DragSourceExtension<>(textLayout);
 		dragTextSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(textLayout);
 
 		// Rich Text Field
-		DraggableRichTextField draggableRich = new DraggableRichTextField("<span>Rich Text Field</span> <i class='fas fa-keyboard'></i>");
+		DraggableRichTextField draggableRich = new DraggableRichTextField("<span>"
+				+ i18n.translate("dialogs-app.field.rich-text", "") + "</span> <i class='fas fa-keyboard'></i>");
 		HorizontalLayout richTextLayout = new HorizontalLayout(draggableRich);
 		DragSourceExtension<HorizontalLayout> dragRichSource = new DragSourceExtension<>(richTextLayout);
 		dragRichSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -78,16 +80,16 @@ public class LayoutUtilImpl implements LayoutUtil {
 			Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
 			if (dragSource.isPresent() && dragSource.get() instanceof HorizontalLayout) {
 				HorizontalLayout hl = new HorizontalLayout();
-				
+
 				HorizontalLayout droppedLayout = ((HorizontalLayout) dragSource.get());
 				DraggableField droppedField = (DraggableField) droppedLayout.getComponent(0);
-				
+
 				String tableId = getTableId(droppedField.getDefinition().getClass());
 				hl.addComponent(addFieldLayout(propertiesLayout, droppedField, tableId));
 				// Action buttons
-				hl.addComponent(addRemoveButton(vl, hl, propertiesLayout, tableId)); // Remove
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
+				hl.addComponent(addRemoveButton(vl, hl, propertiesLayout, tableId)); // Remove
 				vl.addComponent(hl);
 				createNewPropertiesTable(propertiesLayout, tableId, droppedField);
 			}
@@ -95,21 +97,21 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		return vl;
 	}
-	
+
 	private HorizontalLayout addFieldLayout(VerticalLayout propertiesLayout, DraggableField field, String tableId) {
 		HorizontalLayout fieldLayout = new HorizontalLayout();
 		DraggableField tmpField = null;
 		switch (field.getType()) {
-			case RICHTEXT:
-				tmpField = new DraggableRichTextField(field.getLabelText());
-				tmpField.setTableId(tableId);
-				fieldLayout.addComponent((DraggableRichTextField)tmpField);
-				break;
-			default:
-				tmpField = new DraggableTextField(field.getLabelText());
-				tmpField.setTableId(tableId);
-				fieldLayout.addComponent((DraggableTextField)tmpField);
-				break;
+		case RICHTEXT:
+			tmpField = new DraggableRichTextField(field.getLabelText());
+			tmpField.setTableId(tableId);
+			fieldLayout.addComponent((DraggableRichTextField) tmpField);
+			break;
+		default:
+			tmpField = new DraggableTextField(field.getLabelText());
+			tmpField.setTableId(tableId);
+			fieldLayout.addComponent((DraggableTextField) tmpField);
+			break;
 		}
 		fieldLayout.addLayoutClickListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -118,14 +120,14 @@ public class LayoutUtilImpl implements LayoutUtil {
 			public void layoutClick(LayoutClickEvent event) {
 				hideAllPropertiesLayout(propertiesLayout);
 				Iterator<Component> iterator = propertiesLayout.iterator();
-				if(selected != null) {
+				if (selected != null) {
 					selected.removeStyleName("prueba");
 				}
-				selected = (HorizontalLayout)((HorizontalLayout) event.getSource()).getParent();
+				selected = (HorizontalLayout) ((HorizontalLayout) event.getSource()).getParent();
 				selected.setStyleName("prueba");
-				while(iterator.hasNext()) {
+				while (iterator.hasNext()) {
 					Component tmp = iterator.next();
-					if(tmp.getId().equalsIgnoreCase(tableId)){
+					if (tmp.getId().equalsIgnoreCase(tableId)) {
 						tmp.setVisible(true);
 					}
 				}
@@ -142,9 +144,12 @@ public class LayoutUtilImpl implements LayoutUtil {
 		return vl;
 	}
 
-	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component, VerticalLayout propertiesLayout, String tableId) {
+	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component,
+			VerticalLayout propertiesLayout, String tableId) {
 		HorizontalLayout removeLayout = new HorizontalLayout();
-		Label label = new Label("X");
+		Label label = new Label();
+		label.setCaption("<i class=\"fas fa-trash-alt\"></i>");
+		label.setCaptionAsHtml(true);
 		removeLayout.addComponent(label);
 		removeLayout.addLayoutClickListener(new LayoutClickListener() {
 
@@ -153,9 +158,9 @@ public class LayoutUtilImpl implements LayoutUtil {
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
 				Iterator<Component> iterator = propertiesLayout.iterator();
-				while(iterator.hasNext()) {
+				while (iterator.hasNext()) {
 					Component tmp = iterator.next();
-					if(tmp.getId().equalsIgnoreCase(tableId)){
+					if (tmp.getId().equalsIgnoreCase(tableId)) {
 						propertiesLayout.removeComponent(tmp);
 						break;
 					}
@@ -169,7 +174,9 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	private HorizontalLayout addMoveAboveButton(VerticalLayout containerLayout, HorizontalLayout component) {
 		HorizontalLayout moveLayout = new HorizontalLayout();
-		Label label = new Label("<");
+		Label label = new Label();
+		label.setCaption("<i class=\"fas fa-arrow-up\"></i>");
+		label.setCaptionAsHtml(true);
 		moveLayout.addComponent(label);
 		moveLayout.addLayoutClickListener(new LayoutClickListener() {
 
@@ -188,7 +195,9 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	private HorizontalLayout addMoveBelowButton(VerticalLayout containerLayout, HorizontalLayout component) {
 		HorizontalLayout moveLayout = new HorizontalLayout();
-		Label label = new Label(">");
+		Label label = new Label();
+		label.setCaption("<i class=\"fas fa-arrow-down\"></i>");
+		label.setCaptionAsHtml(true);
 		moveLayout.addComponent(label);
 		moveLayout.addLayoutClickListener(new LayoutClickListener() {
 
@@ -204,16 +213,17 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		return moveLayout;
 	}
-	
+
 	private void hideAllPropertiesLayout(VerticalLayout propertiesLayout) {
 		Iterator<Component> iterator = propertiesLayout.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			iterator.next().setVisible(false);
 		}
-		
+
 	}
-	
-	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId, DraggableField draggableField) {
+
+	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId,
+			DraggableField draggableField) {
 		hideAllPropertiesLayout(propertiesLayout);
 		try {
 			VerticalLayout propertyValue = new VerticalLayout();
@@ -221,7 +231,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			HorizontalLayout propertyRow = new HorizontalLayout();
 			Class<? extends ConfiguredFieldDefinition> classDefinition = draggableField.getDefinition().getClass();
 			Field[] commonFields = ConfiguredFieldDefinition.class.getDeclaredFields();
-			Field[] fields = (Field[])ArrayUtils.addAll(commonFields, classDefinition.getDeclaredFields());
+			Field[] fields = (Field[]) ArrayUtils.addAll(commonFields, classDefinition.getDeclaredFields());
 			for (int i = 0; i < fields.length; ++i) {
 				propertyValue.addComponent(getComponentByFieldType(fields[i], draggableField));
 				propertyRow.addComponent(propertyValue);
@@ -229,16 +239,17 @@ public class LayoutUtilImpl implements LayoutUtil {
 			}
 			propertyTable.setId(tableId);
 			propertiesLayout.addComponent(propertyTable);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 	}
-	
+
 	private String getTableId(Class<? extends ConfiguredFieldDefinition> definition) {
 		return definition.getSimpleName() + "_" + Calendar.getInstance().getTimeInMillis();
 	}
-	
+
 	private Component getComponentByFieldType(Field currentField, DraggableField draggableField) {
 		Class fieldType = currentField.getType();
-		switch(fieldType.getSimpleName()) {
+		switch (fieldType.getSimpleName()) {
 		case "Boolean":
 		case "boolean":
 			try {

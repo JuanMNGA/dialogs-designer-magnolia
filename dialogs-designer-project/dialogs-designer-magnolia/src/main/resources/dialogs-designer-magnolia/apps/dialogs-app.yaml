@@ -1,6 +1,7 @@
 appClass: info.magnolia.ui.framework.app.BaseApp
 class: info.magnolia.ui.api.app.AppDescriptor
-icon: icon-dt-dialog-definition
+icon: dialog
+label: dialogs-app.title
 theme: dialogs-theme
 name: dialogs-app
 subApps:
