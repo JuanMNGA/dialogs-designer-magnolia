@@ -1,8 +1,10 @@
 package com.magnolia.rd.dialogs.designer.utils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import com.vaadin.shared.ui.dnd.DropEffect;
 import com.vaadin.shared.ui.dnd.EffectAllowed;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -35,6 +38,29 @@ public class LayoutUtilImpl implements LayoutUtil {
 	private SimpleTranslator i18n;
 
 	private HorizontalLayout selected;
+
+	private static final List<String> specialFields = Arrays.asList("converterClass", "lists");
+	private static final List<String> noIncludeFields = Arrays.asList("validators");
+	private static final List<String> transformerClasses = Arrays.asList(
+			"info.magnolia.ui.form.field.transformer.basic.BasicTransformer",
+			"info.magnolia.ui.form.field.transformer.composite.CompositeTransformer",
+			"info.magnolia.ui.form.field.transformer.composite.SwitchableTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueTransformer",
+			"info.magnolia.ui.form.field.transformer.composite.DelegatingCompositeFieldTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.DelegatingMultiValueFieldTransformer",
+			"info.magnolia.ui.form.field.transformer.composite.NoOpCompositeTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueJSONTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildrenNodeTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildNodeTransformer",
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueSubChildrenNodeTransformer");
+
+	@Override
+	public VerticalLayout createPropertiesLayout() {
+		VerticalLayout vl = new VerticalLayout();
+		vl.addStyleName("dd_properties_layout");
+
+		return vl;
+	}
 
 	@Override
 	public VerticalLayout createFieldsLayout() {
@@ -76,6 +102,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// catch the drops
 		dropTarget.addDropListener(event -> {
+
 			// if the drag source is in the same UI as the target
 			Optional<AbstractComponent> dragSource = event.getDragSourceComponent();
 			if (dragSource.isPresent() && dragSource.get() instanceof HorizontalLayout) {
@@ -86,11 +113,14 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 				String tableId = getTableId(droppedField.getDefinition().getClass());
 				hl.addComponent(addFieldLayout(propertiesLayout, droppedField, tableId));
+
 				// Action buttons
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 				hl.addComponent(addRemoveButton(vl, hl, propertiesLayout, tableId)); // Remove
 				vl.addComponent(hl);
+
+				// Generates a property table for the field dropped
 				createNewPropertiesTable(propertiesLayout, tableId, droppedField);
 			}
 		});
@@ -99,8 +129,10 @@ public class LayoutUtilImpl implements LayoutUtil {
 	}
 
 	private HorizontalLayout addFieldLayout(VerticalLayout propertiesLayout, DraggableField field, String tableId) {
+
 		HorizontalLayout fieldLayout = new HorizontalLayout();
 		DraggableField tmpField = null;
+
 		switch (field.getType()) {
 		case RICHTEXT:
 			tmpField = new DraggableRichTextField(field.getLabelText());
@@ -113,6 +145,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			fieldLayout.addComponent((DraggableTextField) tmpField);
 			break;
 		}
+
 		fieldLayout.addLayoutClickListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
 
@@ -133,15 +166,8 @@ public class LayoutUtilImpl implements LayoutUtil {
 				}
 			}
 		});
+
 		return fieldLayout;
-	}
-
-	@Override
-	public VerticalLayout createPropertiesLayout() {
-		VerticalLayout vl = new VerticalLayout();
-		vl.addStyleName("dd_properties_layout");
-
-		return vl;
 	}
 
 	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component,
@@ -214,6 +240,11 @@ public class LayoutUtilImpl implements LayoutUtil {
 		return moveLayout;
 	}
 
+	/**
+	 * Hide all the layouts in the properties layout
+	 * 
+	 * @param propertiesLayout The layout with the properties
+	 */
 	private void hideAllPropertiesLayout(VerticalLayout propertiesLayout) {
 		Iterator<Component> iterator = propertiesLayout.iterator();
 		while (iterator.hasNext()) {
@@ -229,16 +260,30 @@ public class LayoutUtilImpl implements LayoutUtil {
 			VerticalLayout propertyValue = new VerticalLayout();
 			VerticalLayout propertyTable = new VerticalLayout();
 			HorizontalLayout propertyRow = new HorizontalLayout();
+			
+			// Add class property
+			TextField fieldClass = new TextField("class");
+			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", ""));
+			propertyValue.addComponent(fieldClass);
+			propertyRow.addComponent(propertyValue);
+			propertyTable.addComponent(propertyRow);
+
+			// Add the rest of properties
 			Class<? extends ConfiguredFieldDefinition> classDefinition = draggableField.getDefinition().getClass();
 			Field[] commonFields = ConfiguredFieldDefinition.class.getDeclaredFields();
 			Field[] fields = (Field[]) ArrayUtils.addAll(commonFields, classDefinition.getDeclaredFields());
 			for (int i = 0; i < fields.length; ++i) {
-				propertyValue.addComponent(getComponentByFieldType(fields[i], draggableField));
-				propertyRow.addComponent(propertyValue);
-				propertyTable.addComponent(propertyRow);
+				Field field = fields[i];
+				if (isValidField(field)) {
+					propertyValue.addComponent(getComponentByFieldType(field));
+					propertyRow.addComponent(propertyValue);
+					propertyTable.addComponent(propertyRow);
+				}
 			}
+
 			propertyTable.setId(tableId);
 			propertiesLayout.addComponent(propertyTable);
+
 		} catch (Exception e) {
 		}
 	}
@@ -247,19 +292,47 @@ public class LayoutUtilImpl implements LayoutUtil {
 		return definition.getSimpleName() + "_" + Calendar.getInstance().getTimeInMillis();
 	}
 
-	private Component getComponentByFieldType(Field currentField, DraggableField draggableField) {
-		Class fieldType = currentField.getType();
-		switch (fieldType.getSimpleName()) {
-		case "Boolean":
-		case "boolean":
-			try {
-				return new CheckBox(currentField.getName(), currentField.getBoolean(draggableField));
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				return new CheckBox(currentField.getName());
+	/**
+	 * Generates a component from one property of the field dragged
+	 * 
+	 * @param currentField Property of the dragged field
+	 * @return A component that can be text, check or list
+	 */
+	private Component getComponentByFieldType(Field currentField) {
+
+		if (!isSpecialField(currentField)) {
+
+			Class fieldType = currentField.getType();
+			switch (fieldType.getSimpleName()) {
+			case "Boolean":
+			case "boolean":
+				return new CheckBox(currentField.getName(), false);
+			default:
+				return new TextField(currentField.getName());
 			}
-		default:
-			return new TextField(currentField.getName());
+
+		} else {
+			// There are fields that we need to rename or set a specific value
+			switch (currentField.getName()) {
+			case "converterClass":
+				ComboBox<String> combo = new ComboBox<String>("transformerClass");
+				combo.setReadOnly(false);
+				combo.setItems(transformerClasses);
+				return combo;
+			case "lists":
+				return new CheckBox(currentField.getName(), true);
+			}
 		}
+
+		return new TextField(currentField.getName());
+	}
+	
+	private boolean isValidField(Field field) {
+		return !noIncludeFields.contains(field.getName());
+	}
+
+	private boolean isSpecialField(Field field) {
+		return specialFields.contains(field.getName());
 	}
 
 }

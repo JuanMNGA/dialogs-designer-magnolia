@@ -2,9 +2,11 @@ package com.magnolia.rd.dialogs.designer.utils;
 
 import javax.jcr.Node;
 
+import com.google.inject.ImplementedBy;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.VerticalLayout;
 
+@ImplementedBy(ExportUtil.class)
 public interface ExportUtil {
 
 	/**
@@ -12,7 +14,7 @@ public interface ExportUtil {
 	 * @param dialogNode Node to be exported
 	 * @return Yaml resource
 	 */
-	Resource exportToYaml(Node dialogNode);
+	Resource exportToYaml(String dialogPath);
 	
 	
 	/**

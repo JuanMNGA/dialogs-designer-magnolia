@@ -36,9 +36,36 @@ public class ExportUtilImpl implements ExportUtil {
 	private CommandsManager commandsManager;
 
 	@Override
-	public Resource exportToYaml(Node dialogNode) {
-		// TODO Auto-generated method stub
-		return null;
+	public Resource exportToYaml(String dialogPath) {
+		commandsManager = Components.getComponent(CommandsManager.class);
+		ExportJcrNodeToYamlCommand command = (ExportJcrNodeToYamlCommand) commandsManager.getCommand("default",
+				"exportYaml");
+		TempFileStreamResource tempFileStreamResource = new TempFileStreamResource();
+		tempFileStreamResource.setTempFileName("asdasdasd.yaml");
+		try {
+			command.setOutputStream(tempFileStreamResource.getTempFileOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Map<String, Object> commandsParams = new HashMap<>();
+		commandsParams.put("repository", "config");
+		commandsParams.put("path", dialogPath);
+		commandsParams.put("recursive", true);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			commandsManager.executeCommand(command, commandsParams);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		tempFileStreamResource.setFilename("asdasdasd.yaml");
+		tempFileStreamResource.setMIMEType(MIMEMapping.getMIMEType(FilenameUtils.getExtension("asdasdasd.yaml")));
+		Page.getCurrent().open(tempFileStreamResource, "", true);
+		
+		return tempFileStreamResource;
 	}
 
 	@Override
@@ -65,34 +92,6 @@ public class ExportUtilImpl implements ExportUtil {
 
 			MgnlContext.getJCRSession("config").save();
 
-			commandsManager = Components.getComponent(CommandsManager.class);
-			ExportJcrNodeToYamlCommand command = (ExportJcrNodeToYamlCommand) commandsManager.getCommand("default",
-					"exportYaml");
-			TempFileStreamResource tempFileStreamResource = new TempFileStreamResource();
-			tempFileStreamResource.setTempFileName("asdasdasd.yaml");
-			try {
-				command.setOutputStream(tempFileStreamResource.getTempFileOutputStream());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			Map<String, Object> commandsParams = new HashMap<>();
-			commandsParams.put("repository", "config");
-			commandsParams.put("path", dialog.getPath());
-			commandsParams.put("recursive", true);
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			try {
-				commandsManager.executeCommand(command, commandsParams);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			tempFileStreamResource.setFilename("asdasdasd.yaml");
-			tempFileStreamResource.setMIMEType(MIMEMapping.getMIMEType(FilenameUtils.getExtension("asdasdasd.yaml")));
-			Page.getCurrent().open(tempFileStreamResource, "", true);
-			
 			return dialog;
 		} catch (ItemExistsException e) {
 			e.printStackTrace();
