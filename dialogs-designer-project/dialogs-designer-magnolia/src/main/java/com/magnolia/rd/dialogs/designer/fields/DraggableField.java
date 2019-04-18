@@ -1,6 +1,6 @@
 package com.magnolia.rd.dialogs.designer.fields;
 
-import info.magnolia.ui.field.ConfiguredFieldDefinition;
+import info.magnolia.ui.form.field.definition.ConfiguredFieldDefinition;
 
 public interface DraggableField {
 
@@ -8,7 +8,7 @@ public interface DraggableField {
 	void onDrop();
 	String getLabelText();
 	
-	ConfiguredFieldDefinition<String> getDefinition();
+	ConfiguredFieldDefinition getDefinition();
 	
 	public FieldType getType();
 	

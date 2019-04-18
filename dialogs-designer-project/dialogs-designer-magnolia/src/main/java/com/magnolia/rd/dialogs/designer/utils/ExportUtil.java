@@ -6,7 +6,6 @@ import com.google.inject.ImplementedBy;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.VerticalLayout;
 
-@ImplementedBy(ExportUtil.class)
 public interface ExportUtil {
 
 	/**

@@ -2,7 +2,7 @@ package com.magnolia.rd.dialogs.designer.fields;
 
 import com.vaadin.ui.Label;
 
-import info.magnolia.ui.field.RichTextFieldDefinition;
+import info.magnolia.ui.form.field.definition.RichTextFieldDefinition;
 
 public class DraggableRichTextField extends Label implements DraggableField {
 	
@@ -34,7 +34,7 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	public String getLabelText() {
 		return getCaption();
 	}
-
+	
 	public RichTextFieldDefinition getDefinition() {
 		return definition;
 	}

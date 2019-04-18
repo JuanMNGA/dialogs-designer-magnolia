@@ -2,7 +2,7 @@ package com.magnolia.rd.dialogs.designer.fields;
 
 import com.vaadin.ui.Label;
 
-import info.magnolia.ui.field.TextFieldDefinition;
+import info.magnolia.ui.form.field.definition.TextFieldDefinition;
 
 public class DraggableTextField extends Label implements DraggableField {
 	
