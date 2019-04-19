@@ -131,8 +131,21 @@ public class ExportUtilImpl implements ExportUtil {
 				
 				Component component = table.getComponent(j);
 				String value = getComponentValue(component);
-				if(StringUtils.isNotEmpty(value) && component.getCaption() != null)
-					field.setProperty(component.getCaption(), value);
+				if(StringUtils.isNotEmpty(value) && component.getCaption() != null) {
+				
+					if(component.getCaption().equals("contentPreviewDefinition")) { // Custom for link field
+						Node previewNode = field.addNode("contentPreviewDefinition", NodeTypes.ContentNode.NAME);
+						previewNode.setProperty("contentPreviewClass", value);
+						
+					} else if (component.getCaption().equals("identifierToPathConverter")) { // Custom for link field
+						Node identifierNode = field.addNode("identifierToPathConverter", NodeTypes.ContentNode.NAME);
+						identifierNode.setProperty("class", value);
+						
+					} else { // Is no a link field
+						field.setProperty(component.getCaption(), value);
+					}
+					
+				}
 			}
 		}
 	}

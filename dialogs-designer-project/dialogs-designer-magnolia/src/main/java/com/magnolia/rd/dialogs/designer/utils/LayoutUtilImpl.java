@@ -12,7 +12,11 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.lang.ArrayUtils;
 
 import com.magnolia.rd.dialogs.designer.constants.DialogConstants;
+import com.magnolia.rd.dialogs.designer.fields.DraggableCodeField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableDateField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableHiddenField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableLinkField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableRichTextField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableTextField;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -75,6 +79,38 @@ public class LayoutUtilImpl implements LayoutUtil {
 		DragSourceExtension<HorizontalLayout> dragRichSource = new DragSourceExtension<>(richTextLayout);
 		dragRichSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(richTextLayout);
+
+		// Date Field
+		DraggableDateField draggableDate = new DraggableDateField(
+				"<span>" + i18n.translate("dialogs-app.field.date", "") + "</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout dateLayout = new HorizontalLayout(draggableDate);
+		DragSourceExtension<HorizontalLayout> dragDateSource = new DragSourceExtension<>(dateLayout);
+		dragDateSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(dateLayout);
+
+		// Code Field
+		DraggableCodeField draggableCode = new DraggableCodeField(
+				"<span>" + i18n.translate("dialogs-app.field.code", "") + "</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout codeLayout = new HorizontalLayout(draggableCode);
+		DragSourceExtension<HorizontalLayout> dragCodeSource = new DragSourceExtension<>(codeLayout);
+		dragCodeSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(codeLayout);
+
+		// Hidden Field
+		DraggableHiddenField draggableHidden = new DraggableHiddenField(
+				"<span>" + i18n.translate("dialogs-app.field.hidden", "") + "</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout hiddenLayout = new HorizontalLayout(draggableHidden);
+		DragSourceExtension<HorizontalLayout> dragHiddenSource = new DragSourceExtension<>(hiddenLayout);
+		dragHiddenSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(hiddenLayout);
+
+		// Hidden Field
+		DraggableLinkField draggableLink = new DraggableLinkField(
+				"<span>" + i18n.translate("dialogs-app.field.link", "") + "</span> <i class='fas fa-keyboard'></i>");
+		HorizontalLayout linkLayout = new HorizontalLayout(draggableLink);
+		DragSourceExtension<HorizontalLayout> dragLinkSource = new DragSourceExtension<>(linkLayout);
+		dragLinkSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(linkLayout);
 
 		return vl;
 	}
@@ -147,18 +183,34 @@ public class LayoutUtilImpl implements LayoutUtil {
 		HorizontalLayout fieldLayout = new HorizontalLayout();
 		DraggableField tmpField = null;
 
-		switch (field.getType()) {
+		switch (field.getDraggableType()) {
 		case RICHTEXT:
 			tmpField = new DraggableRichTextField(field.getLabelText());
-			tmpField.setTableId(tableId);
 			fieldLayout.addComponent((DraggableRichTextField) tmpField);
+			break;
+		case DATE:
+			tmpField = new DraggableDateField(field.getLabelText());
+			fieldLayout.addComponent((DraggableDateField) tmpField);
+			break;
+		case CODE:
+			tmpField = new DraggableCodeField(field.getLabelText());
+			fieldLayout.addComponent((DraggableCodeField) tmpField);
+			break;
+		case HIDDEN:
+			tmpField = new DraggableHiddenField(field.getLabelText());
+			fieldLayout.addComponent((DraggableHiddenField) tmpField);
+			break;
+		case LINK:
+			tmpField = new DraggableLinkField(field.getLabelText());
+			fieldLayout.addComponent((DraggableLinkField) tmpField);
 			break;
 		default:
 			tmpField = new DraggableTextField(field.getLabelText());
-			tmpField.setTableId(tableId);
 			fieldLayout.addComponent((DraggableTextField) tmpField);
 			break;
 		}
+		
+		tmpField.setTableId(tableId);
 
 		fieldLayout.addLayoutClickListener(new LayoutClickListener() {
 			private static final long serialVersionUID = 1L;
@@ -204,7 +256,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			VerticalLayout propertyTable = new VerticalLayout();
 			HorizontalLayout propertyRow = new HorizontalLayout();
 
-			// Add class property
+			// Add class property, this is used in Magnolia 5.7 previous versions
 			TextField fieldClass = new TextField("class");
 			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", ""));
 			propertyValue.addComponent(fieldClass);
@@ -218,7 +270,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			for (int i = 0; i < fields.length; ++i) {
 				Field field = fields[i];
 				if (isValidField(field)) {
-					propertyValue.addComponent(getComponentByFieldType(field));
+					propertyValue.addComponent(getComponentByFieldType(field, draggableField.getMagnoliaType()));
 					propertyRow.addComponent(propertyValue);
 					propertyTable.addComponent(propertyRow);
 				}
@@ -241,7 +293,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 	 * @param currentField Property of the dragged field
 	 * @return A component that can be text, check or list
 	 */
-	private Component getComponentByFieldType(Field currentField) {
+	private Component getComponentByFieldType(Field currentField, String magnoliaType) {
 
 		if (!isSpecialField(currentField)) {
 
@@ -257,19 +309,44 @@ public class LayoutUtilImpl implements LayoutUtil {
 		} else {
 			// There are fields that we need to rename or set a specific value
 			switch (currentField.getName()) {
-			case "converterClass":
-				ComboBox<String> combo = new ComboBox<String>("transformerClass");
-				combo.setReadOnly(false);
-				combo.setItems(DialogConstants.transformerClasses);
-				return combo;
+			case "transformerClass":
+				ComboBox<String> cmbTransformer = new ComboBox<String>("transformerClass");
+				cmbTransformer.setReadOnly(false);
+				cmbTransformer.setItems(DialogConstants.transformerClasses);
+				return cmbTransformer;
+			case "identifierToPathConverter":
+				ComboBox<String> cmbIdentifier = new ComboBox<String>("identifierToPathConverter");
+				cmbIdentifier.setReadOnly(false);
+				cmbIdentifier.setItems(DialogConstants.identifierToPathConverters);
+				return cmbIdentifier;
+			case "contentPreviewDefinition":
+				ComboBox<String> cmbPreviews = new ComboBox<String>("contentPreviewDefinition");
+				cmbPreviews.setReadOnly(false);
+				cmbPreviews.setItems(DialogConstants.contentPreviewDefinitions);
+				return cmbPreviews;
 			case "lists":
+			case "fieldEditable":
 				return new CheckBox(currentField.getName(), true);
+			case "fieldType":
+				TextField text = new TextField(currentField.getName());
+				text.setValue(magnoliaType);
+				return text;
 			}
 		}
 
 		return new TextField(currentField.getName());
 	}
 
+	/**
+	 * Adds a button that removes the component from the dialog layout if the user
+	 * clicks on it. This also removes the table with its properties asociated.
+	 * 
+	 * @param containerLayout  The container where the component is
+	 * @param component        The component to be removed
+	 * @param propertiesLayout The layout with all table properties
+	 * @param tableId          The table if for this specific field
+	 * @return A layout with the button
+	 */
 	private HorizontalLayout addRemoveButton(VerticalLayout containerLayout, HorizontalLayout component,
 			VerticalLayout propertiesLayout, String tableId) {
 		HorizontalLayout removeLayout = new HorizontalLayout();

@@ -2,23 +2,23 @@ package com.magnolia.rd.dialogs.designer.fields;
 
 import com.vaadin.ui.Label;
 
-import info.magnolia.ui.form.field.definition.TextFieldDefinition;
+import info.magnolia.ui.form.field.definition.LinkFieldDefinition;
 
-public class DraggableTextField extends Label implements DraggableField {
+public class DraggableLinkField extends Label implements DraggableField {
 	
 	private static final long serialVersionUID = 1876080624209267298L;
 	
-	private static final String magnoliaType = "text";
+	private static final String magnoliaType = "link";
 	
 	private String fieldId;
-	private TextFieldDefinition definition;
-	private FieldType type = FieldType.TEXT;
+	private LinkFieldDefinition definition;
+	private FieldType type = FieldType.LINK;
 	private String tableId;
 	
-	public DraggableTextField(String text) {
+	public DraggableLinkField(String text) {
 		super.setCaption(text);
 		super.setCaptionAsHtml(true);
-		this.definition = new TextFieldDefinition();
+		this.definition = new LinkFieldDefinition();
 	}
 	
 	@Override
@@ -31,11 +31,11 @@ public class DraggableTextField extends Label implements DraggableField {
 		return getCaption();
 	}
 
-	public TextFieldDefinition getDefinition() {
+	public LinkFieldDefinition getDefinition() {
 		return definition;
 	}
 
-	public void setDefinition(TextFieldDefinition definition) {
+	public void setDefinition(LinkFieldDefinition definition) {
 		this.definition = definition;
 	}
 

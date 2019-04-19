@@ -2,40 +2,40 @@ package com.magnolia.rd.dialogs.designer.fields;
 
 import com.vaadin.ui.Label;
 
-import info.magnolia.ui.form.field.definition.TextFieldDefinition;
+import info.magnolia.ui.form.field.definition.DateFieldDefinition;
 
-public class DraggableTextField extends Label implements DraggableField {
+public class DraggableDateField extends Label implements DraggableField {
 	
-	private static final long serialVersionUID = 1876080624209267298L;
+	private static final long serialVersionUID = -5814938430973961031L;
 	
-	private static final String magnoliaType = "text";
-	
+	private static final String magnoliaType = "Date";
+
 	private String fieldId;
-	private TextFieldDefinition definition;
-	private FieldType type = FieldType.TEXT;
+	private DateFieldDefinition definition;
+	private FieldType type = FieldType.DATE;
 	private String tableId;
 	
-	public DraggableTextField(String text) {
+	public DraggableDateField(String text) {
 		super.setCaption(text);
 		super.setCaptionAsHtml(true);
-		this.definition = new TextFieldDefinition();
-	}
-	
-	@Override
-	public String getMagnoliaType() {
-		return magnoliaType;
+		this.definition = new DateFieldDefinition();
 	}
 	
 	@Override
 	public String getLabelText() {
 		return getCaption();
 	}
+	
+	@Override
+	public String getMagnoliaType() {
+		return magnoliaType;
+	}
 
-	public TextFieldDefinition getDefinition() {
+	public DateFieldDefinition getDefinition() {
 		return definition;
 	}
 
-	public void setDefinition(TextFieldDefinition definition) {
+	public void setDefinition(DateFieldDefinition definition) {
 		this.definition = definition;
 	}
 

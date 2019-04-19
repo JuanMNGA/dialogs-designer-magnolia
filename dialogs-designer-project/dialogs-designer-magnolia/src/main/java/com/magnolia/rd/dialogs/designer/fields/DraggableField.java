@@ -4,16 +4,16 @@ import info.magnolia.ui.form.field.definition.ConfiguredFieldDefinition;
 
 public interface DraggableField {
 
-	void onDrag();
-	void onDrop();
 	String getLabelText();
 	
 	ConfiguredFieldDefinition getDefinition();
 	
-	public FieldType getType();
+	FieldType getDraggableType();
 	
-	public String getTableId();
+	String getMagnoliaType();
 	
-	public void setTableId(String tableId);
+	String getTableId();
+	
+	void setTableId(String tableId);
 	
 }

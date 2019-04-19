@@ -8,12 +8,10 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	
 	private static final long serialVersionUID = 2468407864516527394L;
 	
-	public static final String CLASS_IMAGE = "dd_rich_text";
+	private static final String magnoliaType = "richText";
 	
 	private RichTextFieldDefinition definition;
-	
 	private FieldType type = FieldType.RICHTEXT;
-	
 	private String tableId;
 	
 	public DraggableRichTextField(String text) {
@@ -23,11 +21,8 @@ public class DraggableRichTextField extends Label implements DraggableField {
 	}
 	
 	@Override
-	public void onDrag() {
-	}
-
-	@Override
-	public void onDrop() {
+	public String getMagnoliaType() {
+		return magnoliaType;
 	}
 	
 	@Override
@@ -43,7 +38,7 @@ public class DraggableRichTextField extends Label implements DraggableField {
 		this.definition = definition;
 	}
 	
-	public FieldType getType() {
+	public FieldType getDraggableType() {
 		return type;
 	}
 

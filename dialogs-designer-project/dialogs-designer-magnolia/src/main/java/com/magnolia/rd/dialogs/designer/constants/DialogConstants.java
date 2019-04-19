@@ -10,8 +10,20 @@ public class DialogConstants {
 	public static final String MODULE_PATH = "/modules/dialogs-designer-magnolia";
 	public static final String DIALOG_FOLDER = "dialogs";
 	
-	public static final List<String> specialFields = Arrays.asList("converterClass", "lists");
-	public static final List<String> noIncludeFields = Arrays.asList("validators");
+	public static final List<String> specialFields = Arrays.asList(
+			"transformerClass", 
+			"lists", 
+			"fieldType",
+			"identifierToPathConverter",
+			"contentPreviewDefinition",
+			"fieldEditable");
+	
+	public static final List<String> noIncludeFields = Arrays.asList(
+			"validators", 
+			"converterClass", 
+			"NOW", 
+			"targetPropertyToPopulate");
+	
 	public static final List<String> transformerClasses = Arrays.asList(
 			"info.magnolia.ui.form.field.transformer.basic.BasicTransformer",
 			"info.magnolia.ui.form.field.transformer.composite.CompositeTransformer",
@@ -24,5 +36,12 @@ public class DialogConstants {
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildrenNodeTransformer",
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildNodeTransformer",
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueSubChildrenNodeTransformer");
-
+	
+	public static final List<String> identifierToPathConverters = Arrays.asList(
+			"info.magnolia.ui.form.field.converter.BaseIdentifierToPathConverter",
+			"info.magnolia.dam.app.assets.field.translator.AssetCompositeIdKeyTranslator");
+	
+	public static final List<String> contentPreviewDefinitions = Arrays.asList(
+			"info.magnolia.dam.app.ui.field.DamFilePreviewComponent",
+			"info.magnolia.contacts.app.field.component.ContactPreviewComponent");
 }
