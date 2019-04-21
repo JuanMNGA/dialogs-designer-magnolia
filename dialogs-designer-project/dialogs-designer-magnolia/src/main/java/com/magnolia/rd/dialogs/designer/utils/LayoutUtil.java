@@ -2,6 +2,9 @@ package com.magnolia.rd.dialogs.designer.utils;
 
 import com.vaadin.ui.VerticalLayout;
 
+import info.magnolia.ui.api.app.SubAppContext;
+import info.magnolia.ui.vaadin.integration.contentconnector.ContentConnector;
+
 public interface LayoutUtil {
 
 	/**
@@ -18,7 +21,7 @@ public interface LayoutUtil {
 	 * @param propertiesLayout
 	 * @return A vertical layout with the properties
 	 */
-	VerticalLayout createDialogLayout(VerticalLayout propertiesLayout);
+	VerticalLayout createDialogLayout(VerticalLayout propertiesLayout, SubAppContext subAppContext, ContentConnector contentConnector);
 
 	/**
 	 * Creates the layer where the properties of each field will be stored. At the

@@ -1,8 +1,11 @@
 package com.magnolia.rd.dialogs.designer.utils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -34,21 +37,37 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
+import com.vaadin.v7.data.Item;
 
+import info.magnolia.event.EventBus;
 import info.magnolia.i18nsystem.SimpleTranslator;
+import info.magnolia.objectfactory.Components;
+import info.magnolia.ui.api.action.ActionDefinition;
+import info.magnolia.ui.api.app.SubAppContext;
+import info.magnolia.ui.api.event.ContentChangedEvent;
+import info.magnolia.ui.dialog.DialogPresenter;
+import info.magnolia.ui.dialog.callback.DefaultEditorCallback;
+import info.magnolia.ui.dialog.formdialog.FormDialogPresenter;
+import info.magnolia.ui.dialog.formdialog.FormDialogPresenterFactory;
+import info.magnolia.ui.form.EditorCallback;
 import info.magnolia.ui.form.field.definition.ConfiguredFieldDefinition;
+import info.magnolia.ui.vaadin.integration.contentconnector.ContentConnector;
+import info.magnolia.ui.vaadin.integration.jcr.JcrNodeAdapter;
 
 public class LayoutUtilImpl implements LayoutUtil {
 
 	@Inject
 	private SimpleTranslator i18n;
-
 	@Inject
 	private ExportUtil exportUtil;
 
 	private HorizontalLayout selected;
+
+	private Window dialogWindow;
+	private List<Component> actions;
 
 	@Override
 	public VerticalLayout createPropertiesLayout() {
@@ -104,7 +123,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		dragHiddenSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(hiddenLayout);
 
-		// Hidden Field
+		// Link Field
 		DraggableLinkField draggableLink = new DraggableLinkField(
 				"<span>" + i18n.translate("dialogs-app.field.link", "") + "</span> <i class='fas fa-keyboard'></i>");
 		HorizontalLayout linkLayout = new HorizontalLayout(draggableLink);
@@ -116,7 +135,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 	}
 
 	@Override
-	public VerticalLayout createDialogLayout(VerticalLayout propertiesLayout) {
+	public VerticalLayout createDialogLayout(VerticalLayout propertiesLayout, SubAppContext subAppContext, ContentConnector contentConnector) {
 
 		VerticalLayout vl = new VerticalLayout();
 		vl.addStyleName("dd_dialog_layout");
@@ -155,6 +174,8 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Buttons layout
 		HorizontalLayout buttonsLayout = new HorizontalLayout();
+
+		// Export button
 		Button exportButton = new Button();
 		exportButton.setCaption("Export Yaml <i class=\"fas fa-download\"></i>");
 		exportButton.setCaptionAsHtml(true);
@@ -173,10 +194,49 @@ public class LayoutUtilImpl implements LayoutUtil {
 		});
 		buttonsLayout.addComponent(exportButton);
 
+		// Preview button
+		Button previewButton = new Button();
+		previewButton.setCaption("Preview <i class=\"far fa-eye\"></i>");
+		previewButton.setCaptionAsHtml(true);
+
+		// Preview button click
+		previewButton.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				try {
+					Node dialogNode = exportUtil.generateDialogNode(propertiesLayout);
+					dialogNode.getName();
+					
+					String dialogId = "dialogs-designer-magnolia:" + dialogNode.getName();
+					FormDialogPresenterFactory formDialogPresenterFactory = Components.getComponent(FormDialogPresenterFactory.class);
+					final FormDialogPresenter formDialogPresenter = formDialogPresenterFactory.createFormDialogPresenter(dialogId);
+					
+					JcrNodeAdapter adapter = new JcrNodeAdapter(dialogNode);
+					final Item item = contentConnector.getItem(adapter.getItemId());
+		            formDialogPresenter.start(item, dialogId, subAppContext, createEditorCallback(formDialogPresenter));
+
+				} catch (RepositoryException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+		buttonsLayout.addComponent(previewButton);
+
 		vl.addComponent(buttonsLayout);
 
 		return vl;
 	}
+	
+	protected EditorCallback createEditorCallback(final DialogPresenter dialogPresenter) {
+        return new DefaultEditorCallback(dialogPresenter) {
+            @Override
+            public void onSuccess(String actionName) {
+               
+            }
+        };
+    }
 
 	private HorizontalLayout addFieldLayout(VerticalLayout propertiesLayout, DraggableField field, String tableId) {
 
@@ -209,7 +269,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			fieldLayout.addComponent((DraggableTextField) tmpField);
 			break;
 		}
-		
+
 		tmpField.setTableId(tableId);
 
 		fieldLayout.addLayoutClickListener(new LayoutClickListener() {
@@ -257,11 +317,13 @@ public class LayoutUtilImpl implements LayoutUtil {
 			HorizontalLayout propertyRow = new HorizontalLayout();
 
 			// Add class property, this is used in Magnolia 5.7 previous versions
-			TextField fieldClass = new TextField("class");
-			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", ""));
-			propertyValue.addComponent(fieldClass);
-			propertyRow.addComponent(propertyValue);
-			propertyTable.addComponent(propertyRow);
+			/*
+			 * TextField fieldClass = new TextField("class");
+			 * fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass())
+			 * .replace("class ", "")); propertyValue.addComponent(fieldClass);
+			 * propertyRow.addComponent(propertyValue);
+			 * propertyTable.addComponent(propertyRow);
+			 */
 
 			// Add the rest of properties
 			Class<? extends ConfiguredFieldDefinition> classDefinition = draggableField.getDefinition().getClass();
@@ -423,6 +485,19 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 	private boolean isSpecialField(Field field) {
 		return DialogConstants.specialFields.contains(field.getName());
+	}
+
+	private List<Component> dialogActions(Map<String, ActionDefinition> actionDefinitionMap) {
+		List<Component> actions = new ArrayList<>();
+		actionDefinitionMap.forEach((name, actionDefinition) -> {
+			String caption = Optional.ofNullable(actionDefinition.getLabel()).orElse(actionDefinition.getName());
+			Button button = new Button(caption);
+			button.addStyleName(actionDefinition.getName());
+			button.addClickListener(e -> dialogWindow.close());
+			actions.add(button);
+		});
+
+		return actions;
 	}
 
 }

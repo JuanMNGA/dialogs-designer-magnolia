@@ -8,4 +8,6 @@ subApps:
   main:
     subAppClass: com.magnolia.rd.dialogs.designer.app.DialogsSubApp
     class: info.magnolia.ui.api.app.registry.ConfiguredSubAppDescriptor
+    contentConnector:
+      workspace: config
   

@@ -8,7 +8,7 @@ public class DraggableDateField extends Label implements DraggableField {
 	
 	private static final long serialVersionUID = -5814938430973961031L;
 	
-	private static final String magnoliaType = "Date";
+	private static final String magnoliaType = "date";
 
 	private String fieldId;
 	private DateFieldDefinition definition;
