@@ -10,7 +10,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import info.magnolia.objectfactory.Components;
 import info.magnolia.ui.api.app.SubAppContext;
-import info.magnolia.ui.dialog.formdialog.FormDialogPresenterFactory;
 import info.magnolia.ui.vaadin.integration.contentconnector.ContentConnector;
 
 public class DialogsSubAppViewImpl implements DialogsSubAppView {

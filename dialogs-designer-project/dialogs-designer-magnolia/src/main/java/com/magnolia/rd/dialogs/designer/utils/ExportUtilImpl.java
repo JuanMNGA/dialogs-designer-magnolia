@@ -2,10 +2,12 @@ package com.magnolia.rd.dialogs.designer.utils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
@@ -13,6 +15,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.magnolia.rd.dialogs.designer.constants.DialogConstants;
+import com.magnolia.rd.dialogs.designer.fields.DraggableField;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.CheckBox;
@@ -46,7 +49,9 @@ public class ExportUtilImpl implements ExportUtil {
 		ExportJcrNodeToYamlCommand command = (ExportJcrNodeToYamlCommand) commandsManager.getCommand("default",
 				"exportYaml");
 		TempFileStreamResource tempFileStreamResource = new TempFileStreamResource();
-		tempFileStreamResource.setTempFileName("asdasdasd.yaml");
+		String[] pathSplitted = dialogPath.split("/");
+		String dialogName = pathSplitted[pathSplitted.length - 1] + ".yaml";
+		tempFileStreamResource.setTempFileName(dialogName);
 		try {
 			command.setOutputStream(tempFileStreamResource.getTempFileOutputStream());
 		} catch (IOException e) {
@@ -59,40 +64,27 @@ public class ExportUtilImpl implements ExportUtil {
 
 		try {
 			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		try {
 			commandsManager.executeCommand(command, commandsParams);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		tempFileStreamResource.setFilename("asdasdasd.yaml");
-		tempFileStreamResource.setMIMEType(MIMEMapping.getMIMEType(FilenameUtils.getExtension("asdasdasd.yaml")));
+		tempFileStreamResource.setFilename(dialogName);
+		tempFileStreamResource.setMIMEType(MIMEMapping.getMIMEType(FilenameUtils.getExtension(dialogName)));
 		Page.getCurrent().open(tempFileStreamResource, "", true);
 
 		return tempFileStreamResource;
 	}
 
 	@Override
-	public Node generateDialogNode(VerticalLayout propertiesLayout) {
+	public Node generateDialogNode(VerticalLayout dialogLayout, VerticalLayout propertiesLayout, boolean inPreview) {
 
 		Node rootNode = SessionUtil.getNode(RepositoryConstants.CONFIG, DialogConstants.MODULE_PATH);
 
 		try {
 			Node dialogFolder = NodeUtil.createPath(rootNode, "dialogs", NodeTypes.Content.NAME);
 			// Dialog node
-			Node dialog = dialogFolder.addNode(
-					Components.getComponent(NodeNameHelper.class).getUniqueName(dialogFolder, "dialog"),
-					NodeTypes.ContentNode.NAME);
-
-			// Actions Node
-			Node actionsNode = NodeUtil.createPath(dialog, "actions", NodeTypes.ContentNode.NAME);
-			Node commitNode = NodeUtil.createPath(actionsNode, "commit", NodeTypes.ContentNode.NAME);
-			commitNode.setProperty("class", "info.magnolia.ui.dialog.action.SaveDialogActionDefinition");
-			Node cancelNode = NodeUtil.createPath(actionsNode, "cancel", NodeTypes.ContentNode.NAME);
-			cancelNode.setProperty("class", "info.magnolia.ui.dialog.action.CancelDialogActionDefinition");
+			Node dialog = NodeUtil.createPath(dialogFolder, "dialog",NodeTypes.ContentNode.NAME); // .addNode(Components.getComponent(NodeNameHelper.class).getUniqueName(dialogFolder, "dialog"),NodeTypes.ContentNode.NAME);
 
 			// Form and tabs Node
 			Node formNode = NodeUtil.createPath(dialog, "form", NodeTypes.ContentNode.NAME);
@@ -102,8 +94,24 @@ public class ExportUtilImpl implements ExportUtil {
 			
 			// Fields Node
 			Node fields = NodeUtil.createPath(tabMainNode, "fields", NodeTypes.ContentNode.NAME);
-			generateFieldsNode(fields, propertiesLayout);
-
+			NodeIterator childNodes = fields.getNodes();
+			while(childNodes.hasNext()) {
+				Node toDelete = childNodes.nextNode();
+				toDelete.remove();
+			}
+			generateFieldsNode(fields, dialogLayout, propertiesLayout);
+			
+			// Actions Node
+			Node actionsNode = NodeUtil.createPath(dialog, "actions", NodeTypes.ContentNode.NAME);
+			Node commitNode = NodeUtil.createPath(actionsNode, "commit", NodeTypes.ContentNode.NAME);
+			if(!inPreview) {
+				commitNode.setProperty("class", "info.magnolia.ui.dialog.action.SaveDialogActionDefinition");
+			} else {
+				commitNode.setProperty("class", "info.magnolia.ui.dialog.action.CancelDialogActionDefinition");
+			}
+			Node cancelNode = NodeUtil.createPath(actionsNode, "cancel", NodeTypes.ContentNode.NAME);
+			cancelNode.setProperty("class", "info.magnolia.ui.dialog.action.CancelDialogActionDefinition");
+			
 			dialog.getSession().save();
 
 			return dialog;
@@ -114,37 +122,48 @@ public class ExportUtilImpl implements ExportUtil {
 		return null;
 	}
 	
-	private void generateFieldsNode(Node fields, VerticalLayout layout) throws AccessDeniedException, PathNotFoundException, RepositoryException {
+	private void generateFieldsNode(Node fields, VerticalLayout dialogLayout, VerticalLayout propertiesLayout) throws AccessDeniedException, PathNotFoundException, RepositoryException {
 		
-		// First iterate over all the tables with  diferent field properties
-		for(int i=0; i<layout.getComponentCount(); i++) {
+		for(int i = 1; i < dialogLayout.getComponentCount(); i++) {
 			
+			HorizontalLayout fieldHorizontalLayout = (HorizontalLayout) dialogLayout.getComponent(i);
+			HorizontalLayout fieldLayout = (HorizontalLayout) fieldHorizontalLayout.getComponent(0);
+			DraggableField currentField = (DraggableField) fieldLayout.getComponent(0);
+			
+			String currentTableId = currentField.getTableId();
 			// Creates one node for every table
-			VerticalLayout vl = (VerticalLayout) layout.getComponent(i);
-			HorizontalLayout hl = (HorizontalLayout) vl.getComponent(0);
-			VerticalLayout table = (VerticalLayout) hl.getComponent(0);
-			String fieldName = searchFieldName(table);
-			Node field = NodeUtil.createPath(fields, Path.getUniqueLabel(fields, fieldName), NodeTypes.ContentNode.NAME);
-			
-			// Then iterate over all the properties in the table
-			for(int j=0; j<table.getComponentCount(); j++) {
-				
-				Component component = table.getComponent(j);
-				String value = getComponentValue(component);
-				if(StringUtils.isNotEmpty(value) && component.getCaption() != null) {
-				
-					if(component.getCaption().equals("contentPreviewDefinition")) { // Custom for link field
-						Node previewNode = field.addNode("contentPreviewDefinition", NodeTypes.ContentNode.NAME);
-						previewNode.setProperty("contentPreviewClass", value);
-						
-					} else if (component.getCaption().equals("identifierToPathConverter")) { // Custom for link field
-						Node identifierNode = field.addNode("identifierToPathConverter", NodeTypes.ContentNode.NAME);
-						identifierNode.setProperty("class", value);
-						
-					} else { // Is no a link field
-						field.setProperty(component.getCaption(), value);
-					}
+			Iterator<Component> allPropertyTables = propertiesLayout.iterator();
+			boolean notFoundItem = true;
+			while(allPropertyTables.hasNext() && notFoundItem) {
+				VerticalLayout vl = (VerticalLayout) allPropertyTables.next();
+				if(currentTableId.equalsIgnoreCase(vl.getId())) {
+					notFoundItem = false;
+					HorizontalLayout hl = (HorizontalLayout) vl.getComponent(0);
+					VerticalLayout table = (VerticalLayout) hl.getComponent(0);
+					String fieldName = searchFieldName(table);
+					Node field = NodeUtil.createPath(fields, Path.getUniqueLabel(fields, fieldName), NodeTypes.ContentNode.NAME);
 					
+					// Then iterate over all the properties in the table
+					for(int j=0; j<table.getComponentCount(); j++) {
+						
+						Component component = table.getComponent(j);
+						String value = getComponentValue(component);
+						if(StringUtils.isNotEmpty(value) && component.getCaption() != null) {
+						
+							if(component.getCaption().equals("contentPreviewDefinition")) { // Custom for link field
+								Node previewNode = field.addNode("contentPreviewDefinition", NodeTypes.ContentNode.NAME);
+								previewNode.setProperty("contentPreviewClass", value);
+								
+							} else if (component.getCaption().equals("identifierToPathConverter")) { // Custom for link field
+								Node identifierNode = field.addNode("identifierToPathConverter", NodeTypes.ContentNode.NAME);
+								identifierNode.setProperty("class", value);
+								
+							} else { // Is no a link field
+								field.setProperty(component.getCaption(), value);
+							}
+							
+						}
+					}
 				}
 			}
 		}

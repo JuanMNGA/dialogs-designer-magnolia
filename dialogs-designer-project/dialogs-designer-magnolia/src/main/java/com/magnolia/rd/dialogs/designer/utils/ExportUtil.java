@@ -21,6 +21,6 @@ public interface ExportUtil {
 	 * @param layout Properties layout
 	 * @return A dialog node
 	 */
-	Node generateDialogNode(VerticalLayout layout);
+	Node generateDialogNode(VerticalLayout dialogLayout, VerticalLayout propertiesLayout, boolean inPreview);
 	
 }

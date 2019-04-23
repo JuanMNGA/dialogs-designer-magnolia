@@ -185,7 +185,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					Node dialogNode = exportUtil.generateDialogNode(propertiesLayout);
+					Node dialogNode = exportUtil.generateDialogNode(vl, propertiesLayout, false);
 					exportUtil.exportToYaml(dialogNode.getPath());
 				} catch (RepositoryException e) {
 					e.printStackTrace();
@@ -205,8 +205,9 @@ public class LayoutUtilImpl implements LayoutUtil {
 			public void buttonClick(ClickEvent event) {
 
 				try {
-					Node dialogNode = exportUtil.generateDialogNode(propertiesLayout);
-					dialogNode.getName();
+					Node dialogNode = exportUtil.generateDialogNode(vl, propertiesLayout, true);
+					
+					Thread.sleep(5000);
 					
 					String dialogId = "dialogs-designer-magnolia:" + dialogNode.getName();
 					FormDialogPresenterFactory formDialogPresenterFactory = Components.getComponent(FormDialogPresenterFactory.class);
@@ -216,7 +217,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 					final Item item = contentConnector.getItem(adapter.getItemId());
 		            formDialogPresenter.start(item, dialogId, subAppContext, createEditorCallback(formDialogPresenter));
 
-				} catch (RepositoryException e) {
+				} catch (RepositoryException | InterruptedException e) {
 					e.printStackTrace();
 				}
 
@@ -317,13 +318,10 @@ public class LayoutUtilImpl implements LayoutUtil {
 			HorizontalLayout propertyRow = new HorizontalLayout();
 
 			// Add class property, this is used in Magnolia 5.7 previous versions
-			/*
-			 * TextField fieldClass = new TextField("class");
-			 * fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass())
-			 * .replace("class ", "")); propertyValue.addComponent(fieldClass);
-			 * propertyRow.addComponent(propertyValue);
-			 * propertyTable.addComponent(propertyRow);
-			 */
+			TextField fieldClass = new TextField("class");
+			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", "")); propertyValue.addComponent(fieldClass);
+			propertyRow.addComponent(propertyValue);
+			propertyTable.addComponent(propertyRow);
 
 			// Add the rest of properties
 			Class<? extends ConfiguredFieldDefinition> classDefinition = draggableField.getDefinition().getClass();
