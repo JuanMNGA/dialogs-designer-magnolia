@@ -165,6 +165,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 				hl.addComponent(addMoveAboveButton(vl, hl)); // Move above
 				hl.addComponent(addMoveBelowButton(vl, hl)); // Move below
 				hl.addComponent(addRemoveButton(vl, hl, propertiesLayout, tableId)); // Remove
+				hl.setStyleName("dd_dropped_item");
 				vl.addComponent(hl);
 
 				// Generates a property table for the field dropped
@@ -179,6 +180,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		Button exportButton = new Button();
 		exportButton.setCaption("Export Yaml <i class=\"fas fa-download\"></i>");
 		exportButton.setCaptionAsHtml(true);
+		exportButton.setStyleName("dd_export_button");
 
 		// Export button click
 		exportButton.addClickListener(new ClickListener() {
@@ -198,6 +200,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		Button previewButton = new Button();
 		previewButton.setCaption("Preview <i class=\"far fa-eye\"></i>");
 		previewButton.setCaptionAsHtml(true);
+		previewButton.setStyleName("dd_preview_button");
 
 		// Preview button click
 		previewButton.addClickListener(new ClickListener() {
@@ -224,6 +227,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			}
 		});
 		buttonsLayout.addComponent(previewButton);
+		buttonsLayout.setStyleName("dd_button_layout");
 
 		vl.addComponent(buttonsLayout);
 
@@ -281,10 +285,10 @@ public class LayoutUtilImpl implements LayoutUtil {
 				hideAllPropertiesLayout(propertiesLayout);
 				Iterator<Component> iterator = propertiesLayout.iterator();
 				if (selected != null) {
-					selected.removeStyleName("prueba");
+					selected.removeStyleName("dd_item_selected");
 				}
 				selected = (HorizontalLayout) ((HorizontalLayout) event.getSource()).getParent();
-				selected.setStyleName("prueba");
+				selected.setStyleName("dd_item_selected");
 				while (iterator.hasNext()) {
 					Component tmp = iterator.next();
 					if (tmp.getId().equalsIgnoreCase(tableId)) {
@@ -308,7 +312,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			iterator.next().setVisible(false);
 		}
 	}
-
+	// TODO: JAVADOCS
 	private void createNewPropertiesTable(VerticalLayout propertiesLayout, String tableId,
 			DraggableField draggableField) {
 		hideAllPropertiesLayout(propertiesLayout);
@@ -319,8 +323,11 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 			// Add class property, this is used in Magnolia 5.7 previous versions
 			TextField fieldClass = new TextField("class");
-			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", "")); propertyValue.addComponent(fieldClass);
+			fieldClass.setValue(String.valueOf(draggableField.getDefinition().getClass()).replace("class ", ""));
+			propertyValue.addComponent(fieldClass);
+			propertyValue.setStyleName("dd_property_value");
 			propertyRow.addComponent(propertyValue);
+			propertyRow.setStyleName("dd_property_row");
 			propertyTable.addComponent(propertyRow);
 
 			// Add the rest of properties
@@ -337,6 +344,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 			}
 
 			propertyTable.setId(tableId);
+			propertyTable.setStyleName("dd_property_table");
 			propertiesLayout.addComponent(propertyTable);
 
 		} catch (Exception e) {
@@ -358,8 +366,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 		if (!isSpecialField(currentField)) {
 
 			Class fieldType = currentField.getType();
-			switch (fieldType.getSimpleName()) {
-			case "Boolean":
+			switch (fieldType.getSimpleName().toLowerCase()) {
 			case "boolean":
 				return new CheckBox(currentField.getName(), false);
 			default:

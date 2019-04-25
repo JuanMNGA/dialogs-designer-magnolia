@@ -140,7 +140,7 @@ public class ExportUtilImpl implements ExportUtil {
 					notFoundItem = false;
 					HorizontalLayout hl = (HorizontalLayout) vl.getComponent(0);
 					VerticalLayout table = (VerticalLayout) hl.getComponent(0);
-					String fieldName = searchFieldName(table);
+					String fieldName = searchFieldName(table).replaceAll("[\\W]+", "-");
 					Node field = NodeUtil.createPath(fields, Path.getUniqueLabel(fields, fieldName), NodeTypes.ContentNode.NAME);
 					
 					// Then iterate over all the properties in the table

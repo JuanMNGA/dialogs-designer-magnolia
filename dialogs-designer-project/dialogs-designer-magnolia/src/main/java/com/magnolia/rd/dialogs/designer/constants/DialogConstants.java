@@ -22,7 +22,8 @@ public class DialogConstants {
 			"validators", 
 			"converterClass", 
 			"NOW", 
-			"targetPropertyToPopulate");
+			"targetPropertyToPopulate",
+			"name");
 	
 	public static final List<String> transformerClasses = Arrays.asList(
 			"info.magnolia.ui.form.field.transformer.basic.BasicTransformer",
