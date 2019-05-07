@@ -85,15 +85,15 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Text Field
 		DraggableTextField draggableText = new DraggableTextField(
-				"<span>" + i18n.translate("dialogs-app.field.text", "") + "</span> <i class='fas fa-keyboard'></i>");
+				"<i class=\"fas fa-font\"></i> " + "<span>" + i18n.translate("dialogs-app.field.text", "") + "</span>");
 		HorizontalLayout textLayout = new HorizontalLayout(draggableText);
 		DragSourceExtension<HorizontalLayout> dragTextSource = new DragSourceExtension<>(textLayout);
 		dragTextSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(textLayout);
 
 		// Rich Text Field
-		DraggableRichTextField draggableRich = new DraggableRichTextField("<span>"
-				+ i18n.translate("dialogs-app.field.rich-text", "") + "</span> <i class='fas fa-keyboard'></i>");
+		DraggableRichTextField draggableRich = new DraggableRichTextField(
+				"<i class='fas fa-paragraph'></i> " + "<span>" + i18n.translate("dialogs-app.field.rich-text", "") + "</span>");
 		HorizontalLayout richTextLayout = new HorizontalLayout(draggableRich);
 		DragSourceExtension<HorizontalLayout> dragRichSource = new DragSourceExtension<>(richTextLayout);
 		dragRichSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -101,7 +101,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Date Field
 		DraggableDateField draggableDate = new DraggableDateField(
-				"<span>" + i18n.translate("dialogs-app.field.date", "") + "</span> <i class='fas fa-keyboard'></i>");
+				"<i class='fas fa-calendar-alt'></i> " + "<span>" + i18n.translate("dialogs-app.field.date", "") + "</span>");
 		HorizontalLayout dateLayout = new HorizontalLayout(draggableDate);
 		DragSourceExtension<HorizontalLayout> dragDateSource = new DragSourceExtension<>(dateLayout);
 		dragDateSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -109,7 +109,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Code Field
 		DraggableCodeField draggableCode = new DraggableCodeField(
-				"<span>" + i18n.translate("dialogs-app.field.code", "") + "</span> <i class='fas fa-keyboard'></i>");
+				"<i class='fas fa-code'></i> " + "<span>" + i18n.translate("dialogs-app.field.code", "") + "</span>");
 		HorizontalLayout codeLayout = new HorizontalLayout(draggableCode);
 		DragSourceExtension<HorizontalLayout> dragCodeSource = new DragSourceExtension<>(codeLayout);
 		dragCodeSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -117,7 +117,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Hidden Field
 		DraggableHiddenField draggableHidden = new DraggableHiddenField(
-				"<span>" + i18n.translate("dialogs-app.field.hidden", "") + "</span> <i class='fas fa-keyboard'></i>");
+				"<i class='fas fa-eye-slash'></i> " + "<span>" + i18n.translate("dialogs-app.field.hidden", "") + "</span>" );
 		HorizontalLayout hiddenLayout = new HorizontalLayout(draggableHidden);
 		DragSourceExtension<HorizontalLayout> dragHiddenSource = new DragSourceExtension<>(hiddenLayout);
 		dragHiddenSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -125,7 +125,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 
 		// Link Field
 		DraggableLinkField draggableLink = new DraggableLinkField(
-				"<span>" + i18n.translate("dialogs-app.field.link", "") + "</span> <i class='fas fa-keyboard'></i>");
+				"<i class='fas fa-link'></i> " + "<span>" + i18n.translate("dialogs-app.field.link", "") + "</span>");
 		HorizontalLayout linkLayout = new HorizontalLayout(draggableLink);
 		DragSourceExtension<HorizontalLayout> dragLinkSource = new DragSourceExtension<>(linkLayout);
 		dragLinkSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -288,7 +288,7 @@ public class LayoutUtilImpl implements LayoutUtil {
 					selected.removeStyleName("dd_item_selected");
 				}
 				selected = (HorizontalLayout) ((HorizontalLayout) event.getSource()).getParent();
-				selected.setStyleName("dd_item_selected");
+				selected.addStyleName("dd_item_selected");
 				while (iterator.hasNext()) {
 					Component tmp = iterator.next();
 					if (tmp.getId().equalsIgnoreCase(tableId)) {
