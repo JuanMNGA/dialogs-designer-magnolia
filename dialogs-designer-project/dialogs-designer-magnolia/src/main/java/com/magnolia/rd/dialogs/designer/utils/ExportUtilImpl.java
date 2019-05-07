@@ -148,7 +148,7 @@ public class ExportUtilImpl implements ExportUtil {
 						
 						Component component = table.getComponent(j);
 						String value = getComponentValue(component);
-						if(StringUtils.isNotEmpty(value) && component.getCaption() != null) {
+						if(StringUtils.isNotEmpty(value) && component.getCaption() != null && !component.getCaption().equalsIgnoreCase("name")) {
 						
 							if(component.getCaption().equals("contentPreviewDefinition")) { // Custom for link field
 								Node previewNode = field.addNode("contentPreviewDefinition", NodeTypes.ContentNode.NAME);

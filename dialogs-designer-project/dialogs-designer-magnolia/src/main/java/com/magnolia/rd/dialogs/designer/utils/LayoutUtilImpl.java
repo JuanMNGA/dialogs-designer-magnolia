@@ -15,12 +15,16 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.lang.ArrayUtils;
 
 import com.magnolia.rd.dialogs.designer.constants.DialogConstants;
+import com.magnolia.rd.dialogs.designer.fields.DraggableBasicUploadField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableCheckboxField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableCodeField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableDateField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableHiddenField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableLinkField;
+import com.magnolia.rd.dialogs.designer.fields.DraggablePasswordField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableRichTextField;
+import com.magnolia.rd.dialogs.designer.fields.DraggableStaticField;
 import com.magnolia.rd.dialogs.designer.fields.DraggableTextField;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -130,6 +134,38 @@ public class LayoutUtilImpl implements LayoutUtil {
 		DragSourceExtension<HorizontalLayout> dragLinkSource = new DragSourceExtension<>(linkLayout);
 		dragLinkSource.setEffectAllowed(EffectAllowed.MOVE);
 		vl.addComponent(linkLayout);
+		
+		// Password Field
+		DraggablePasswordField draggablePassword = new DraggablePasswordField(
+				"<i class=\"fas fa-key\"></i> " + "<span>" + i18n.translate("dialogs-app.field.password", "") + "</span>");
+		HorizontalLayout passwordLayout = new HorizontalLayout(draggablePassword);
+		DragSourceExtension<HorizontalLayout> dragPasswordSource = new DragSourceExtension<>(passwordLayout);
+		dragPasswordSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(passwordLayout);
+		
+		// Checkbox Field
+		DraggableCheckboxField draggableCheckbox = new DraggableCheckboxField(
+				"<i class=\"fas fa-check-square\"></i> " + "<span>" + i18n.translate("dialogs-app.field.checkbox", "") + "</span>");
+		HorizontalLayout checkboxLayout = new HorizontalLayout(draggableCheckbox);
+		DragSourceExtension<HorizontalLayout> dragCheckboxSource = new DragSourceExtension<>(checkboxLayout);
+		dragCheckboxSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(checkboxLayout);
+		
+		// Static Field
+		DraggableStaticField draggableStatic = new DraggableStaticField(
+				"<i class=\"fas fa-tag\"></i> " + "<span>" + i18n.translate("dialogs-app.field.static", "") + "</span>");
+		HorizontalLayout staticLayout = new HorizontalLayout(draggableStatic);
+		DragSourceExtension<HorizontalLayout> dragStaticSource = new DragSourceExtension<>(staticLayout);
+		dragStaticSource.setEffectAllowed(EffectAllowed.MOVE);
+		vl.addComponent(staticLayout);
+		
+		// Basic upload Field
+//		DraggableBasicUploadField draggableBasicUpload = new DraggableBasicUploadField(
+//				"<i class=\"fas fa-upload\"></i> " + "<span>" + i18n.translate("dialogs-app.field.basicupload", "") + "</span>");
+//		HorizontalLayout basicUploadLayout = new HorizontalLayout(draggableBasicUpload);
+//		DragSourceExtension<HorizontalLayout> dragBasicUploadSource = new DragSourceExtension<>(basicUploadLayout);
+//		dragBasicUploadSource.setEffectAllowed(EffectAllowed.MOVE);
+//		vl.addComponent(basicUploadLayout);
 
 		return vl;
 	}
@@ -268,6 +304,22 @@ public class LayoutUtilImpl implements LayoutUtil {
 		case LINK:
 			tmpField = new DraggableLinkField(field.getLabelText());
 			fieldLayout.addComponent((DraggableLinkField) tmpField);
+			break;
+		case PASSWORD:
+			tmpField = new DraggablePasswordField(field.getLabelText());
+			fieldLayout.addComponent((DraggablePasswordField) tmpField);
+			break;
+		case CHECKBOX:
+			tmpField = new DraggableCheckboxField(field.getLabelText());
+			fieldLayout.addComponent((DraggableCheckboxField) tmpField);
+			break;
+		case STATIC:
+			tmpField = new DraggableStaticField(field.getLabelText());
+			fieldLayout.addComponent((DraggableStaticField) tmpField);
+			break;
+		case BASICUPLOAD:
+			tmpField = new DraggableBasicUploadField(field.getLabelText());
+			fieldLayout.addComponent((DraggableBasicUploadField) tmpField);
 			break;
 		default:
 			tmpField = new DraggableTextField(field.getLabelText());

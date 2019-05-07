@@ -23,7 +23,9 @@ public class DialogConstants {
 			"converterClass", 
 			"NOW", 
 			"targetPropertyToPopulate",
-			"name");
+			"verificationCurrentPassword",
+			"verificationCurrentPasswordMessage",
+			"verificationCurrentPasswordErrorMessage");
 	
 	public static final List<String> transformerClasses = Arrays.asList(
 			"info.magnolia.ui.form.field.transformer.basic.BasicTransformer",
@@ -36,7 +38,8 @@ public class DialogConstants {
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueJSONTransformer",
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildrenNodeTransformer",
 			"info.magnolia.ui.form.field.transformer.multi.MultiValueChildNodeTransformer",
-			"info.magnolia.ui.form.field.transformer.multi.MultiValueSubChildrenNodeTransformer");
+			"info.magnolia.ui.form.field.transformer.multi.MultiValueSubChildrenNodeTransformer",
+			"info.magnolia.ui.form.field.transformer.basic.BCryptTransformer");
 	
 	public static final List<String> identifierToPathConverters = Arrays.asList(
 			"info.magnolia.ui.form.field.converter.BaseIdentifierToPathConverter",

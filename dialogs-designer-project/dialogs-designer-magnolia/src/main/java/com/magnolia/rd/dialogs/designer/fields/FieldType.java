@@ -6,5 +6,9 @@ public enum FieldType {
 	DATE,
 	CODE,
 	HIDDEN,
-	LINK
+	LINK,
+	PASSWORD,
+	CHECKBOX,
+	STATIC,
+	BASICUPLOAD
 }
