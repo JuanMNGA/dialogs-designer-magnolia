@@ -30,7 +30,6 @@ import info.magnolia.cms.core.Path;
 import info.magnolia.cms.security.AccessDeniedException;
 import info.magnolia.commands.CommandsManager;
 import info.magnolia.commands.ExportJcrNodeToYamlCommand;
-import info.magnolia.jcr.util.NodeNameHelper;
 import info.magnolia.jcr.util.NodeTypes;
 import info.magnolia.jcr.util.NodeUtil;
 import info.magnolia.jcr.util.SessionUtil;
@@ -84,7 +83,7 @@ public class ExportUtilImpl implements ExportUtil {
 		try {
 			Node dialogFolder = NodeUtil.createPath(rootNode, "dialogs", NodeTypes.Content.NAME);
 			// Dialog node
-			Node dialog = NodeUtil.createPath(dialogFolder, "dialog",NodeTypes.ContentNode.NAME); // .addNode(Components.getComponent(NodeNameHelper.class).getUniqueName(dialogFolder, "dialog"),NodeTypes.ContentNode.NAME);
+			Node dialog = NodeUtil.createPath(dialogFolder, "dialog",NodeTypes.ContentNode.NAME);
 
 			// Form and tabs Node
 			Node formNode = NodeUtil.createPath(dialog, "form", NodeTypes.ContentNode.NAME);

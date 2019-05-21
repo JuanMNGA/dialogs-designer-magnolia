@@ -46,12 +46,10 @@ import com.vaadin.ui.dnd.DragSourceExtension;
 import com.vaadin.ui.dnd.DropTargetExtension;
 import com.vaadin.v7.data.Item;
 
-import info.magnolia.event.EventBus;
 import info.magnolia.i18nsystem.SimpleTranslator;
 import info.magnolia.objectfactory.Components;
 import info.magnolia.ui.api.action.ActionDefinition;
 import info.magnolia.ui.api.app.SubAppContext;
-import info.magnolia.ui.api.event.ContentChangedEvent;
 import info.magnolia.ui.dialog.DialogPresenter;
 import info.magnolia.ui.dialog.callback.DefaultEditorCallback;
 import info.magnolia.ui.dialog.formdialog.FormDialogPresenter;
