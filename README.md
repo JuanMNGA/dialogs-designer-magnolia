@@ -1,4 +1,4 @@
-![magnolia-logo](https://raw.githubusercontent.com/JuanMNGA/dialogs-designer-magnolia/master/dialogs-designer-project/dialogs-designer-magnolia/src/main/resources/img/header.png)
+![magnolia-logo](https://raw.githubusercontent.com/JuanMNGA/dialogs-designer-magnolia/master/dialogs-designer-project/dialogs-designer-magnolia/src/main/resources/img/header.jpg)
 
 # DIALOGS DESIGNER
 
