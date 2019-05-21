@@ -12,7 +12,7 @@ Se trata de una aplicación VAADIN, desarrollada a medida aprovechando las inter
 Proporciona una Content-App para crear y diseñar diálogos en Magnolia. Ofrece un modo _Preview_ para probar el aspecto del diálogo en función del orden y propiedades de los campos.
 También permite exportar el diálogo en formato Yaml, importable a través de la herramienta de importación de Magnolia.
 
-## ¿Cómo funciona?
+## ¿Cómo funciona? :bulb:
 
 La aplicación se divide en tres regiones:
 * Grid de campos (a la izquierda)
